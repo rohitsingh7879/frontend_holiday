@@ -1,0 +1,21 @@
+.css-1jqq78o-placeholder {
+    grid-area: 1 / 1 / 2 / 3;
+    color: hsl(0, 0%, 50%);
+    margin-left: 2px;
+    margin-right: 2px;
+    box-sizing: border-box;
+    font-size: 13px;
+}
+.css-1u9des2-indicatorSeparator {display: none!important;}
+.css-13cymwt-control {
+    border: 0px!important;
+}
+button.search_btn {
+    border: 0px!important;
+}
+.form_c button {
+    color: #778088;
+    font-size: 12px;
+    border: 0px;
+    width: 100%;
+}

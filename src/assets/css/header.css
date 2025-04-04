@@ -1,0 +1,53 @@
+:root{
+	
+	--turquoise: #1A333B;
+	--sunset: #A8783D;
+	
+}
+
+.top_area{
+    background: #F7F0EB;
+}
+.align-items-center {
+    align-items: center !important;
+}
+.social_m ul {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+}
+.social_m ul li {
+    list-style: none;
+    display: inline-block;
+}
+.social_m ul li a {
+    text-decoration: none;
+    color: #1A333B;
+    margin-right: 10px;
+    padding: 10px 0px;
+    display: block;
+}
+.right_part {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+.cnum {
+    background: #1a333b !important;
+    text-align: center;
+    color: #fff;
+    padding: 8px 0px;
+    width: 50%;
+    margin: 10px 0px;
+}
+.cnum span {
+    display: block;
+    font-size: 11px;
+}
+.menu_area {
+    background: #1a333b !important;
+}
+
+.logo {
+    width: 65%;
+}

@@ -1,0 +1,14 @@
+
+
+section.partner { 
+
+margin-bottom: 50px ;
+} 
+.partner_slider{
+    display: flex;
+}
+.partner .slick-slide img {
+    object-fit: contain;
+    width: 180px;
+    height: 80px;
+}

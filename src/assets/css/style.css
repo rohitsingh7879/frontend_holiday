@@ -1,0 +1,26 @@
+/* slick-dots customization */
+.slick-dots {
+    position: absolute;
+    bottom: -30px; /* Adjust this value as needed */
+    display: flex !important;
+    justify-content: center;
+  }
+  
+  .slick-dots li {
+    margin: 0 5px; /* Space between dots */
+  }
+  
+  .slick-dots li button:before {
+    font-size: 12px; /* Dot size */
+    color: #000; /* Dot color */
+  }
+  
+  .slick-dots li.slick-active button:before {
+    color: #007bff; /* Active dot color */
+  }
+  
+  
+ 
+  
+  
+  
