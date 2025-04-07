@@ -58,6 +58,7 @@ const CruiseCollection = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
   const fetchAllCruiseLineData = async () => {
     fetch(`${import.meta.env.VITE_API_URL + endpoints?.newpackage}`)
       .then((response) => {
@@ -85,6 +86,7 @@ const CruiseCollection = () => {
     }
     fetchAllCruiseLineData();
   }, []);
+  
   const API_BASE_URL = "https://www.widgety.co.uk/api/cruises.json";
   const APP_ID = "9f8ae7c620357e30f59d1cf1e167ddb4f5b6f1ce";
   const TOKEN =
