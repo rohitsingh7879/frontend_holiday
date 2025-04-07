@@ -10,6 +10,8 @@ import map2 from "../assets/images/icons/map2.png";
 import Cosec from "../Component/Cosec";
 import DOMPurify from "dompurify";
 import endpoints from "../utils/endpoints";
+import '../App.css'
+import '../assets/css/inner.css'
 
 const API_URL = import.meta.env.VITE_API_URL;
 const Contact = () => {

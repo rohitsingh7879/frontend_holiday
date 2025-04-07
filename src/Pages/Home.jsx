@@ -6,16 +6,15 @@ import Cruisesearch from "../Component/Cruisesearch";
 const Home = () => {
   const [cruiseDetail, setCruiseDetail] = useState([]);
   const [loading, setLoading] = useState(true);
-  const handleImageLoad = () => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 1000);
-  };
 
   const handleImageError = () => {
     setLoading(false);
   };
 
+  const handleImageLoad = () => {
+    setLoading(false);
+  };
+  
   useEffect(() => {
     const fetchCruiseDetails = async () => {
       try {
@@ -32,10 +31,10 @@ const Home = () => {
         if (data.success && data.data.length > 0) {
           setCruiseDetail(data.data);
         } else {
-          setError("No data found");
+          console.log("No data found");
         }
       } catch (error) {
-        setError(error.message);
+        console.log(error.message);
       }
     };
 
@@ -93,9 +92,11 @@ const Home = () => {
                     className={`img-fluid d-block w-100 ${
                       loading ? "invisible" : "visible"
                     }`}
+                    loading="lazy" // Enable native lazy loading for images
                     onLoad={handleImageLoad}
                     onError={handleImageError}
                   />
+
                   <div className="carousel-caption">
                     {!loading && (
                       <>

@@ -5,7 +5,7 @@ import chat from "../assets/images/icons/chat.png";
 import booking from "../assets/images/icons/booking.png";
 import Cosec from "../assets/images/icons/icon4.png";
 import icon5 from "../assets/images/icons/icon5.png";
-
+import '../assets/css/inner.css'
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
@@ -67,6 +67,7 @@ const Newsletter = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  
   return (
     <>
       <section className="banner_inner">

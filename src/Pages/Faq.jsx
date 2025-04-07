@@ -6,6 +6,7 @@ import chat from "../assets/images/icons/chat.png";
 import map from "../assets/images/map.png";
 import faq from "../assets/images/faq.png";
 import DOMPurify from "dompurify";
+import '../assets/css/inner.css'
 
 import Customersay from "../Component/Customersay";
 import endpoints from "../utils/endpoints";

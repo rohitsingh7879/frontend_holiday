@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useLocation, useNavigate } from "react-router-dom";
 import Slider from "react-slick";
 import Cosec from "./Cosec";
 import CruiseLinePromotion from "./CruiseLinePromotion";
@@ -13,7 +12,26 @@ import generateCruiseDetailsUrl from "../utils/DetailsURL";
 
 const CruiseSection = () => {
   const [data, setData] = useState([]);
+  // const [loading, setLoading] = useState(
+  //   data.reduce((acc, item, index) => {
+  //     acc[index] = true; // Default all images as loading
+  //     return acc;
+  //   }, {})
+  // );
 
+  // const handleImageLoad = (index) => {
+  //   setLoading((prevState) => ({
+  //     ...prevState,
+  //     [index]: false, // Image has finished loading
+  //   }));
+  // };
+
+  // const handleImageError = (index) => {
+  //   setLoading((prevState) => ({
+  //     ...prevState,
+  //     [index]: false, // Image failed to load
+  //   }));
+  // };
   const fetchAllCruiseLineData = async () => {
     fetch(`${import.meta.env.VITE_API_URL + endpoints?.newpackage}`)
       .then((response) => {
@@ -25,7 +43,7 @@ const CruiseSection = () => {
       })
       .then((data) => {
         setData(data?.data);
-        console.log("---8888888888",data?.data)
+        console.log("---8888888888", data?.data);
       })
       .catch((error) => {
         console.error("API Error:", error);
@@ -60,11 +78,31 @@ const CruiseSection = () => {
                 ?.filter((item) => item.statusPickCollection)
                 .map((item, index) => (
                   <div className="coll_box" key={index}>
+                    {/* {loading[index] !== false && (
+                      <div style={{ minHeight: "200px" }} className="d-flex justify-content-center align-items-center">
+                        <div
+                          className="spinner-grow "
+                          role="status"
+                          style={{
+                            width: "3rem",
+                            height: "3rem",
+                          }}
+                        >
+                          <span className="visually-hidden">Loading...</span>
+                        </div>
+                      </div>
+                    )} */}
+
                     <img
                       src={item?.cruise_image}
                       className="img-fluid"
                       alt="Cruise"
                       loading="lazy"
+                      // onLoad={() => handleImageLoad(index)}
+                      // onError={() => handleImageError(index)}
+                      // style={{
+                        // display: loading[index] == false ? "block" : "none",
+                      // }}
                     />
                     <div className="c_data">
                       <span>
@@ -99,7 +137,10 @@ const CruiseSection = () => {
                         </b>
                       </div>
                       <Link
-                        to={generateCruiseDetailsUrl("new-cruise-details", item)}
+                        to={generateCruiseDetailsUrl(
+                          "new-cruise-details",
+                          item
+                        )}
                         className="dis_more"
                         data-discover="true"
                       >

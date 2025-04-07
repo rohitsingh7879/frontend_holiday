@@ -6,7 +6,7 @@ import Customersay from "../Component/Customersay";
 import endpoints from "../utils/endpoints";
 import axios from "axios";
 import NewsLetterByEmail from "../Component/NewsLetterByEmail";
-
+import '../assets/css/inner.css'
 const CareerOportunity = () => {
 
   useEffect(() => {

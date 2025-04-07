@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import '../assets/css/searchcruises.css';
 import axios from "axios";
 import { format, parse } from "date-fns";
+import '../assets/css/home.css'
 
 const Cruisesearch = () => {
   const [cruiseTypes, setCruiseTypes] = useState([]);
   const [regions, setRegions] = useState([]);
   const [ships, setShips] = useState([]);
-  const [ship, setShip] = useState([]);
-  const [operator, setOperator] = useState([]);
   const [cruiseLines, setCruiseLines] = useState([]);
   const [cruiseDate, setCruiseDate] = useState([]);
   const [selectedCruiseTypes, setSelectedCruiseTypes] = useState(null);
@@ -18,7 +17,6 @@ const Cruisesearch = () => {
   const [selectedShips, setSelectedShips] = useState(null);
   const [selectedCruiseLine, setSelectedCruiseLine] = useState(null);
   const [selectedCruiseDate, setSelectedCruiseDate] = useState(null);
-  const [searchResults, setSearchResults] = useState([]);
   const [allOperatorDetails, setAllOperatorDetails] = useState([])
 
   const API_BASE_URL = "https://www.widgety.co.uk/api/cruises.json";
@@ -154,7 +152,6 @@ const Cruisesearch = () => {
         }
       });
       if(result && result?.status == 200){
-        setSearchResults(result?.data?.cruises);
         navigate("/cruise-deals", { state: { results: result?.data?.cruises } });
       }else{
         console.log("error in searching....")

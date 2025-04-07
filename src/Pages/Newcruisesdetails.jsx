@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useNavigate } from "react";
 import moment from "moment";
+import "../assets/css/cruisedetails.css";
+
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import { useParams } from "react-router-dom";

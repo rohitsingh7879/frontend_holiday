@@ -14,6 +14,9 @@ import Select from "react-select";
 import axios from "axios";
 import endpoints from "../utils/endpoints";
 import generateCruiseDetailsUrl from "../utils/DetailsURL";
+import '../assets/css/inner.css'
+import '../App.css'
+
 const CruiseCollection = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);

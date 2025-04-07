@@ -78,21 +78,23 @@ const Regions = () => {
     setLoadingImg(false);
   };
 
-  // useEffect(() => {
-  //   if (regionFromURL) {
-  //     setSelectedRegion(regionFromURL);
-  //   }
-  // }, [regionFromURL]);
+  useEffect(() => {
+    if (regionFromURL) {
+      setSelectedRegion(regionFromURL);
+    }
+  }, [regionFromURL]);
 
-  // useEffect(() => {
-  //   if (selectedRegion) {
-  //     // setShipDetails([]);
-  //     // setShipDetailsFromDB([]);
-  //     // setCruiseDataFromDB([]);
-  //     // setCruiseData([]);
-  //     fetchRegiondata();
-  //   }
-  // }, [selectedRegion, sortOption, currentPage]);
+  useEffect(() => {
+    if (regionFromURL) {
+      setShipDetails([]);
+      setShipDetailsFromDB([]);
+      setCruiseDataFromDB([]);
+      setCruiseData([]);
+      fetchRegiondata();
+      fetchShipdataFromDB()
+    }
+  }, [regionFromURL]);
+
   const fetchShipAllList = async () => {
     try {
       let result = await axios.get(
@@ -450,6 +452,7 @@ const Regions = () => {
     selectedCruiseLine,
     selectedShips,
     selectedPort,
+    
   ]);
 
   const handleSortChange = (e) => {
@@ -629,7 +632,7 @@ const Regions = () => {
               />
               <div className="bg-overlay12" />
               <div className="carousel-caption">
-                <h3>{selectedRegion}</h3>
+                <h3>{selectedRegion || regionFromURL}</h3>
                 <p>Holiday2 Collection</p>
               </div>
             </div>
@@ -642,7 +645,7 @@ const Regions = () => {
               />
               <div className="bg-overlay" />
               <div className="carousel-caption">
-                <h3>{selectedRegion}</h3>
+                <h3>{selectedRegion || regionFromURL}</h3>
                 <p>Holiday2 Collection</p>
               </div>
             </div>
@@ -655,7 +658,7 @@ const Regions = () => {
               />
               <div className="bg-overlay" />
               <div className="carousel-caption">
-                <h3>{selectedRegion}</h3>
+                <h3>{selectedRegion || regionFromURL}</h3>
                 <p>Holiday2 Collection</p>
               </div>
             </div>

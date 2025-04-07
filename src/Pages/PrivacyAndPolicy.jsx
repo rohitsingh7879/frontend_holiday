@@ -6,6 +6,7 @@ import Customersay from "../Component/Customersay";
 import endpoints from "../utils/endpoints";
 import NewaLetterByEmail from "../Component/NewsLetterByEmail";
 import axios from "axios";
+import '../assets/css/inner.css'
 
 const PrivacyAndPolicy = () => {
   useEffect(() => {

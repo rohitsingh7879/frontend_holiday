@@ -19,6 +19,7 @@ import axios from "axios";
 import { debounce } from "lodash";
 import generateCruiseDetailsUrl from "../utils/DetailsURL";
 import formatString from "../utils/formatingString";
+import '../assets/css/inner.css'
 
 const API_URL = import.meta.env.VITE_API_URL;
 const API_BASE_URL = "https://www.widgety.co.uk/api/cruises.json";
