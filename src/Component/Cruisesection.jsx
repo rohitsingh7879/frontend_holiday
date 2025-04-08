@@ -12,43 +12,26 @@ import generateCruiseDetailsUrl from "../utils/DetailsURL";
 
 const CruiseSection = () => {
   const [data, setData] = useState([]);
-  // const [loading, setLoading] = useState(
-  //   data.reduce((acc, item, index) => {
-  //     acc[index] = true; // Default all images as loading
-  //     return acc;
-  //   }, {})
-  // );
+  const [loading, setLoading] = useState(true); // State to track loading status
 
-  // const handleImageLoad = (index) => {
-  //   setLoading((prevState) => ({
-  //     ...prevState,
-  //     [index]: false, // Image has finished loading
-  //   }));
-  // };
-
-  // const handleImageError = (index) => {
-  //   setLoading((prevState) => ({
-  //     ...prevState,
-  //     [index]: false, // Image failed to load
-  //   }));
-  // };
   const fetchAllCruiseLineData = async () => {
-    fetch(`${import.meta.env.VITE_API_URL + endpoints?.newpackage}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        return response.json();
-      })
-      .then((data) => {
-        setData(data?.data);
-        console.log("---8888888888", data?.data);
-      })
-      .catch((error) => {
-        console.error("API Error:", error);
-      });
+    try {
+      setLoading(true); // Start loading
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL + endpoints?.newpackage}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setData(data?.data);
+    } catch (error) {
+      console.error("API Error:", error);
+    } finally {
+      setLoading(false); // Stop loading after the API call completes
+    }
   };
+
   useEffect(() => {
     fetchAllCruiseLineData();
   }, []);
@@ -73,83 +56,79 @@ const CruiseSection = () => {
           <h2>Picks from Cruise Collections</h2>
 
           <div className="collection_slider">
-            <Slider {...settings}>
-              {data
-                ?.filter((item) => item.statusPickCollection)
-                .map((item, index) => (
-                  <div className="coll_box" key={index}>
-                    {/* {loading[index] !== false && (
-                      <div style={{ minHeight: "200px" }} className="d-flex justify-content-center align-items-center">
-                        <div
-                          className="spinner-grow "
-                          role="status"
-                          style={{
-                            width: "3rem",
-                            height: "3rem",
-                          }}
+            {data && data?.length > 0 ? (
+              <Slider {...settings} aria-label="Cruise Collection Slider">
+                {data
+                  ?.filter((item) => item.statusPickCollection)
+                  .map((item, index) => (
+                    <div className="coll_box" key={index}>
+                      <img
+                        src={item?.cruise_image}
+                        className="img-fluid"
+                        alt="Cruise"
+                        loading="lazy"
+                      />
+                      <div className="c_data">
+                        <span>
+                          {item?.ship} | {item?.region}
+                        </span>
+                        <p>{item?.name}</p>
+                        <div className="c_datec">
+                          <div>
+                            <span>
+                              <i className="ri-calendar-todo-fill" />{" "}
+                              {item?.cruise_nights} nights -{" "}
+                              {item?.itinerary?.length > 0 &&
+                                moment
+                                  .unix(item.itinerary[0].check_in_date)
+                                  .format("DD MMM YYYY")}
+                            </span>
+                          </div>
+                          <div>
+                            <img
+                              src={item?.mobile_cruise_banner_image}
+                              className="sm_logo"
+                              alt="Logo"
+                            />
+                          </div>
+                        </div>
+                        <hr />
+                        <div className="pricee">
+                          Cruises from{" "}
+                          <b>
+                            {" "}
+                            £{item?.priceStartFrom ? item.priceStartFrom : 0} pp
+                          </b>
+                        </div>
+                        <Link
+                          to={generateCruiseDetailsUrl(
+                            "new-cruise-details",
+                            item
+                          )}
+                          className="dis_more"
+                          data-discover="true"
                         >
-                          <span className="visually-hidden">Loading...</span>
-                        </div>
+                          DISCOVER MORE
+                        </Link>
                       </div>
-                    )} */}
-
-                    <img
-                      src={item?.cruise_image}
-                      className="img-fluid"
-                      alt="Cruise"
-                      loading="lazy"
-                      // onLoad={() => handleImageLoad(index)}
-                      // onError={() => handleImageError(index)}
-                      // style={{
-                        // display: loading[index] == false ? "block" : "none",
-                      // }}
-                    />
-                    <div className="c_data">
-                      <span>
-                        {item?.ship} | {item?.region}
-                      </span>
-                      <p>{item?.name}</p>
-                      <div className="c_datec">
-                        <div>
-                          <span>
-                            <i className="ri-calendar-todo-fill" />{" "}
-                            {item?.cruise_nights} nights -{" "}
-                            {item?.itinerary?.length > 0 &&
-                              moment
-                                .unix(item.itinerary[0].check_in_date)
-                                .format("DD MMM YYYY")}
-                          </span>
-                        </div>
-                        <div>
-                          <img
-                            src={item?.mobile_cruise_banner_image}
-                            className="sm_logo"
-                            alt="Logo"
-                          />
-                        </div>
-                      </div>
-                      <hr />
-                      <div className="pricee">
-                        Cruises from{" "}
-                        <b>
-                          {" "}
-                          £{item?.priceStartFrom ? item.priceStartFrom : 0} pp
-                        </b>
-                      </div>
-                      <Link
-                        to={generateCruiseDetailsUrl(
-                          "new-cruise-details",
-                          item
-                        )}
-                        className="dis_more"
-                        data-discover="true"
-                      >
-                        DISCOVER MORE
-                      </Link>
                     </div>
-                  </div>
-                ))}
-            </Slider>
+                  ))}
+              </Slider>
+            ) : !data?.length && loading ? (
+              <div className="d-flex justify-content-center align-items-center h-25">
+                <div className="spinner-border text-secondary" role="status">
+                  <span className="sr-only"></span>
+                </div>
+              </div>
+            ) : !data?.length ? (
+              <div className="d-flex text-center">No Data Available</div>
+            ) : (
+              <div className="d-flex justify-content-center align-items-center h-25">
+                <div className="spinner-border text-secondary" role="status">
+                  <span className="sr-only"></span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>

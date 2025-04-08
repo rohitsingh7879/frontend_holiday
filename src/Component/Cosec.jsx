@@ -1,9 +1,5 @@
-import React from 'react'
-import icon1 from '../assets/images/icons/icon1.png';
-import icon2 from '../assets/images/icons/icon2.png';
-import icon3 from '../assets/images/icons/icon3.png';
-import icon4 from '../assets/images/icons/icon4.png';
-import icon5 from '../assets/images/icons/icon5.png';
+import { icon1, icon2, icon3, icon4, icon5 } from '../assets/images'
+
 const Cosec = () => {
   return (
     <>

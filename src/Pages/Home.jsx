@@ -3,6 +3,7 @@ import "../assets/css/home.css";
 import Cruisesection from "../Component/Cruisesection";
 import endpoints from "../utils/endpoints";
 import Cruisesearch from "../Component/Cruisesearch";
+
 const Home = () => {
   const [cruiseDetail, setCruiseDetail] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +15,7 @@ const Home = () => {
   const handleImageLoad = () => {
     setLoading(false);
   };
-  
+
   useEffect(() => {
     const fetchCruiseDetails = async () => {
       try {
@@ -86,15 +87,15 @@ const Home = () => {
                   key={index}
                   className={`carousel-item ${index === 0 ? "active" : ""}`}
                 >
+                  {/* Optimized image with IntersectionObserver for lazy loading */}
                   <img
                     src={slide.bannerImage}
                     alt={`Banner ${index + 1}`}
-                    className={`img-fluid d-block w-100 ${
-                      loading ? "invisible" : "visible"
-                    }`}
-                    loading="lazy" // Enable native lazy loading for images
+                    className={`img-fluid d-block w-100 ${loading ? "invisible" : "visible"}`}
+                    loading="lazy" // Native lazy loading
                     onLoad={handleImageLoad}
                     onError={handleImageError}
+                    style={{ opacity: loading ? 0 : 1 }} // Prevent flickering
                   />
 
                   <div className="carousel-caption">
