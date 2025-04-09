@@ -14,8 +14,8 @@ import Select from "react-select";
 import axios from "axios";
 import endpoints from "../utils/endpoints";
 import generateCruiseDetailsUrl from "../utils/DetailsURL";
-import '../assets/css/inner.css'
-import '../App.css'
+import "../assets/css/inner.css";
+import "../App.css";
 
 const CruiseCollection = () => {
   const location = useLocation();
@@ -89,7 +89,7 @@ const CruiseCollection = () => {
     }
     fetchAllCruiseLineData();
   }, []);
-  
+
   const API_BASE_URL = "https://www.widgety.co.uk/api/cruises.json";
   const APP_ID = "9f8ae7c620357e30f59d1cf1e167ddb4f5b6f1ce";
   const TOKEN =
@@ -166,12 +166,13 @@ const CruiseCollection = () => {
       ];
       const formattedDates = uniqueDates.map((date) => {
         const dateObj = new Date(date);
-        const day = dateObj.getDate();
+        // const day = dateObj.getDate();
+        const day = String(dateObj.getDate()).padStart(2, '0');
         const monthName = dateObj.toLocaleString("default", { month: "long" });
         const year = dateObj.getFullYear();
         return {
           value: `${day} ${monthName} ${year}`,
-          label: ` ${monthName} ${year}`,
+          label: `${day} ${monthName} ${year}`,
         };
       });
 
@@ -751,23 +752,26 @@ const CruiseCollection = () => {
                                 : "N/A"}
                             </div>
                             <div className="dieds line_h15">
-                              <span>
+                              <span className="d-flex justify-content-left gap-3 align-items-center">
                                 <img
                                   src={iconship}
                                   className="img-fluid"
                                   alt="ship icon"
                                 />{" "}
-                                {item.itinerary
-                                  .slice(0, 5)
-                                  ?.sort((a, b) =>
-                                    a?.port?.localeCompare(b?.port)
-                                  )
-                                  .map((itineraryItem, index) => (
-                                    <span key={index}>
-                                      {itineraryItem?.port}
-                                      {index < 4 ? ", " : ""}
-                                    </span>
-                                  ))}
+                                <div className="d-flex flex-wrap gap-2">
+                                  {item?.itinerary
+                                    ?.slice(0, 5)
+                                    ?.sort((a, b) =>
+                                      a?.port?.localeCompare(b?.port)
+                                    )
+                                    ?.map((port, portIndex) => (
+                                      <div key={portIndex} className="">
+                                        <div className="">
+                                          {`${port?.port + " | "}` || "N/A"}
+                                        </div>
+                                      </div>
+                                    ))}
+                                </div>
                               </span>
                             </div>
                             <div className="curise_des_area">

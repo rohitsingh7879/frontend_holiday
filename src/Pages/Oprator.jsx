@@ -19,7 +19,7 @@ import axios from "axios";
 import { debounce } from "lodash";
 import generateCruiseDetailsUrl from "../utils/DetailsURL";
 import formatString from "../utils/formatingString";
-import '../assets/css/inner.css'
+import "../assets/css/inner.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const API_BASE_URL = "https://www.widgety.co.uk/api/cruises.json";
@@ -40,8 +40,9 @@ const Oprator = () => {
   const [totalCruises, setTotalCruises] = useState(0);
   const [isloading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [searchBySide, setSearchBySide] = useState(false);
 
-  const [itemsPerPage, setItemsPerPage] = useState(15);
+  const [itemsPerPage, setItemsPerPage] = useState(1);
   const [shipRefData, setshipRefData] = useState([]);
   const [shipDetailsFromDB, setShipDetailsFromDB] = useState([]);
   const [cruiseDataFromDB, setCruiseDataFromDB] = useState([]);
@@ -62,7 +63,8 @@ const Oprator = () => {
   const [price, setPrice] = useState(0);
 
   const [selectedRegions, setSelectedRegions] = useState(null);
-  const [selectedCruiseDate, setSelectedCruiseDate] = useState(null);
+  const [selectedCruiseStartDate, setSelectedCruiseStartDate] = useState(null);
+  const [selectedCruiseEndDate, setSelectedCruiseEndDate] = useState(null);
   const [selectedCruiseLine, setSelectedCruiseLine] = useState(null);
   const [selectedShips, setSelectedShips] = useState(null);
   const [selectedPort, setSelectedPort] = useState(null);
@@ -202,12 +204,13 @@ const Oprator = () => {
       ];
       const formattedDates = uniqueDates.map((date) => {
         const dateObj = new Date(date);
-        const day = dateObj.getDate();
+        // const day = dateObj.getDate();
+        const day = String(dateObj.getDate()).padStart(2, "0");
         const monthName = dateObj.toLocaleString("default", { month: "long" });
         const year = dateObj.getFullYear();
         return {
           value: `${day} ${monthName} ${year}`,
-          label: ` ${monthName} ${year}`,
+          label: `${day} ${monthName} ${year}`,
         };
       });
 
@@ -237,7 +240,8 @@ const Oprator = () => {
   const fetchOpratordata = async (para1, para2, para3) => {
     try {
       setIsLoading(true);
-      const selectedCruiseDateQuery = selectedCruiseDate?.value || "";
+      const selectedCruiseStartDateQuery = selectedCruiseStartDate || "";
+      const selectedCruiseEndDateQuery = selectedCruiseEndDate || "";
       const catQuery = para3 || [];
       const regionQuery = selectedRegions?.value || "";
       const cruiseLineQuery = regionFromURL || "";
@@ -245,26 +249,52 @@ const Oprator = () => {
       const portQuery = selectedPort?.value || "";
       const durationQuery = para2 || "";
       const priceQuery = para1 || "";
-      let queryParams = new URLSearchParams({
-        categories: catQuery,
-        dates: [selectedCruiseDateQuery],
-        operators: [cruiseLineQuery],
-        regions: [regionQuery],
-        ships: [shipQuery],
-        ports: [portQuery],
-        maxDuration: durationQuery,
-        maxPrice: priceQuery,
-      });
+
+      let queryParams = new URLSearchParams();
+
+      if (catQuery?.length) {
+        queryParams.append("cruise_type", catQuery);
+      }
+
+      if (selectedCruiseStartDateQuery) {
+        queryParams.append(
+          "start_date_range_beginning",
+          selectedCruiseStartDateQuery
+        );
+      }
+      if (selectedCruiseEndDateQuery) {
+        queryParams.append("start_date_range_end", selectedCruiseEndDate);
+      }
+
+      if (regionQuery) {
+        queryParams.append("region", regionQuery);
+      }
+
+      if (shipQuery) {
+        queryParams.append("ship_name", shipQuery);
+      }
+
+      if (portQuery) {
+        queryParams.append("start_from", portQuery);
+      }
+
+      if (durationQuery) {
+        queryParams.append("maxDuration", durationQuery);
+      }
+
+      if (priceQuery) {
+        queryParams.append("maxPrice", priceQuery);
+      }
+
       const response = await fetch(
         `${API_BASE_URL}?app_id=${APP_ID}&token=${TOKEN}&operator=${regionFromURL}&page=${currentPage}&limit=${itemsPerPage}&${queryParams?.toString()}`,
         { headers: { Accept: "application/json;api_version=2" } }
       );
       const getoprator = await response.json();
+      console.log("first-----", getoprator);
 
-      if (getoprator && getoprator.total) {
-        setTotalCruises(getoprator.total);
-      }
-      if (getoprator && getoprator.cruises) {
+      if (getoprator && getoprator?.cruises?.length > 0) {
+        setTotalCruises(getoprator?.total);
         const cruisedataResult = getoprator?.cruises?.map((cruise) => ({
           shipname: cruise.ship_title,
           name: cruise.name,
@@ -289,7 +319,7 @@ const Oprator = () => {
         if (currentPage > 1) {
           setCruiseData((prevData) => [...prevData, ...cruisedataResult]);
         } else {
-          setCruiseData([...cruisedataResult]);
+          setCruiseData(cruisedataResult);
         }
 
         const shipPromises = cruisedataResult.map((cruise) =>
@@ -308,11 +338,21 @@ const Oprator = () => {
 
         await Promise.all([...shipPromises, ...portPromises]);
         setIsLoading(false);
+      setSearchBySide(false)
+
       } else {
+        setCruiseData([]);
+        setShipDetails([]);
+        setTotalCruises(0);
+        setIsLoading(false);
+      setSearchBySide(false)
+
         console.log("No cruises found for this operator.");
       }
     } catch (error) {
       setIsLoading(false);
+      setSearchBySide(false)
+
       console.error("Error fetching operator data:", error);
     }
   };
@@ -454,6 +494,9 @@ const Oprator = () => {
             return isDuplicate ? prevDetails : [...prevDetails, newDetails];
           });
         });
+      } else {
+        setCruiseDataFromDB([]);
+        setShipDetailsFromDB([]);
       }
     } catch (error) {
       console.error("Error fetching ship details:", error);
@@ -477,7 +520,6 @@ const Oprator = () => {
 
   const fetchopCurrent = async () => {
     try {
-     
       if (!regionFromURL) {
         console.error("No operator selected.");
         return;
@@ -573,9 +615,10 @@ const Oprator = () => {
 
   const searchSideBarCruises = async (para1, para2, para3) => {
     try {
-      setLoading(true);
+      setIsLoading(true);
       const cruiseCategoryQuery = para3 || [];
-      const selectedCruiseDateQuery = selectedCruiseDate?.value || "";
+      const selectedCruiseStartDateQuery = selectedCruiseStartDate || "";
+      const selectedCruiseEndDateQuery = selectedCruiseEndDate || "";
       const regionQuery = selectedRegions?.value || "";
       const cruiseLineQuery = regionFromURL || "";
       const shipQuery = selectedShips?.value || "";
@@ -585,7 +628,8 @@ const Oprator = () => {
       // const sortingQuery = sortOption || "";
       let queryParams = new URLSearchParams({
         cruise_category: JSON.stringify(cruiseCategoryQuery),
-        departure_month: selectedCruiseDateQuery,
+        departure_month_start: selectedCruiseStartDateQuery,
+        departure_month_end: selectedCruiseEndDateQuery,
         destination: regionQuery,
         cruise_line: cruiseLineQuery,
         cruise_ship: shipQuery,
@@ -598,7 +642,8 @@ const Oprator = () => {
       });
 
       if (
-        !selectedCruiseDateQuery &&
+        !selectedCruiseStartDateQuery &&
+        !selectedCruiseEndDateQuery &&
         !cruiseLineQuery &&
         !regionQuery &&
         !shipQuery &&
@@ -624,7 +669,7 @@ const Oprator = () => {
           } else {
             setCruiseDataFromDB([...filterResult]);
           }
-          setLoading(false);
+          setIsLoading(false);
 
           filterResult?.forEach((item) => {
             const coverImage = item?.cruise_image;
@@ -655,7 +700,7 @@ const Oprator = () => {
           setShipDetailsFromDB([]);
         }
       } else {
-        setLoading(false);
+        setIsLoading(false);
         console.error("Error searching cruises:", response?.data?.message);
       }
     } catch (error) {
@@ -694,9 +739,10 @@ const Oprator = () => {
   };
 
   useEffect(() => {
-    fetchOpratordata();
+  
 
-    const selectedCruiseDateQuery = selectedCruiseDate?.value || "";
+    const selectedCruiseStartDateQuery = selectedCruiseStartDate || "";
+    const selectedCruiseEndDateQuery = selectedCruiseEndDate || "";
     const catQuery = cruiseCategory || [];
     const regionQuery = selectedRegions?.value || "";
     const shipQuery = selectedShips?.value || "";
@@ -704,8 +750,19 @@ const Oprator = () => {
     const durationQuery = duration || "";
     const priceQuery = price || "";
 
+    if (currentPage === 1) {
+      setCruiseData([]);
+      setCruiseDataFromDB([]);
+      setShipDetails([]);
+      setShipDetailsFromDB([]);
+    }
+    setIsLoading(true);
+    fetchOpratordata();
+
+
     if (
-      selectedCruiseDateQuery ||
+      selectedCruiseStartDateQuery ||
+      selectedCruiseEndDateQuery ||
       regionQuery ||
       shipQuery ||
       portQuery ||
@@ -713,17 +770,21 @@ const Oprator = () => {
       priceQuery ||
       catQuery.length > 0
     ) {
+      if(currentPage===1){
+      setSearchBySide(true)
+      }
       searchSideBarCruises();
     } else {
       fetchShipdataFromDB();
     }
   }, [
     currentPage,
-    selectedCruiseDate,
+    selectedCruiseStartDate,
+    selectedCruiseEndDate,
     selectedRegions,
     selectedShips,
     selectedPort,
-    regionFromURL
+    regionFromURL,
   ]);
 
   const handleReset = async (e) => {
@@ -735,7 +796,8 @@ const Oprator = () => {
     setShipDetailsFromDB([]);
 
     setCruiseCategory([]);
-    setSelectedCruiseDate("");
+    setSelectedCruiseStartDate("");
+    setSelectedCruiseEndDate("");
     setSelectedCruiseLine("");
     setSelectedShips("");
     setSelectedPort("");
@@ -856,206 +918,238 @@ const Oprator = () => {
                   <div className="container">
                     <div className="row">
                       <div className="col-lg-3">
-                        <div className="ship_left_area">
-                          <div className="button1">
-                            <h4>
-                              CRUISE CATEGORY{" "}
-                              <i className="ri-arrow-down-s-line" />
-                            </h4>
-                            <div className="mydiv">
-                              <ul>
-                                {category
-                                  ?.slice(0, visibleCount)
-                                  .map((filter, index) => (
-                                    <li key={index}>
-                                      <input
-                                        type="checkbox"
-                                        checked={cruiseCategory.includes(
-                                          filter.value
-                                        )}
-                                        onChange={() =>
-                                          handleCheckboxChange(filter.value)
-                                        }
-                                      />{" "}
-                                      {filter.label}
-                                    </li>
-                                  ))}
-                              </ul>
+                        <form action="" className="scroll_form" id="style-1">
+                          <div className="ship_left_area">
+                            <div className="button1">
+                              <h4>
+                                CRUISE CATEGORY{" "}
+                                <i className="ri-arrow-down-s-line" />
+                              </h4>
+                              <div className="mydiv">
+                                <ul>
+                                  {category
+                                    ?.slice(0, visibleCount)
+                                    .map((filter, index) => (
+                                      <li key={index}>
+                                        <input
+                                          type="checkbox"
+                                          checked={cruiseCategory.includes(
+                                            filter.value
+                                          )}
+                                          onChange={() =>
+                                            handleCheckboxChange(filter.value)
+                                          }
+                                        />{" "}
+                                        {filter.label}
+                                      </li>
+                                    ))}
+                                </ul>
 
-                              {category?.length > 5 && (
-                                <button
-                                  className="action_btn_cat"
-                                  onClick={handleSeeMore}
+                                {category?.length > 5 && (
+                                  <button
+                                    className="action_btn_cat"
+                                    onClick={handleSeeMore}
+                                  >
+                                    {visibleCount === 5
+                                      ? "See More"
+                                      : "See Less"}
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                            <div className="button1">
+                              <h4>
+                                DEPARTURE START DATE{" "}
+                                <i className="ri-arrow-down-s-line" />
+                              </h4>
+                              <div className="mydiv">
+                                {/* <Select
+                                  options={cruiseDate}
+                                  value={selectedCruiseStartDate}
+                                  onChange={setSelectedCruiseStartDate}
+                                  placeholder="Select Date"
+                                  className="select_area"
+                                  classNamePrefix="select_area"
+                                /> */}
+                                <input
+                                  type="date"
+                                  className="form-control"
+                                  onChange={(e) =>
+                                    setSelectedCruiseStartDate(e.target.value)
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="button1">
+                              <h4>
+                                DEPARTURE END DATE{" "}
+                                <i className="ri-arrow-down-s-line" />
+                              </h4>
+                              <div className="mydiv">
+                                <input
+                                  type="date"
+                                  className="form-control"
+                                  min={selectedCruiseStartDate}
+                                  disabled={!selectedCruiseStartDate}
+                                  onChange={(e) =>
+                                    setSelectedCruiseEndDate(e.target.value)
+                                  }
+                                />
+                              </div>
+                            </div>
+                            <div className="button1">
+                              <h4>
+                                Destination{" "}
+                                <i className="ri-arrow-down-s-line" />
+                              </h4>
+                              <div className="mydiv">
+                                <Select
+                                  options={regions}
+                                  value={selectedRegions}
+                                  onChange={setSelectedRegions}
+                                  placeholder="Select Destination"
+                                  className="select_area "
+                                  classNamePrefix="select_area"
+                                />
+                              </div>
+                            </div>
+                            <div className="button1">
+                              <h4>
+                                Cruise Line{" "}
+                                <i className="ri-arrow-down-s-line" />
+                              </h4>
+                              <div className="mydiv">
+                                <option value={regionFromURL}>
+                                  {regionFromURL}
+                                </option>
+                              </div>
+                            </div>
+                            <div className="button1">
+                              <h4>
+                                CRUISE SHIP{" "}
+                                <i className="ri-arrow-down-s-line" />
+                              </h4>
+                              <div className="mydiv">
+                                <Select
+                                  options={ships}
+                                  value={selectedShips}
+                                  onChange={setSelectedShips}
+                                  placeholder="Select Ship"
+                                />
+                              </div>
+                            </div>
+                            <div className="button1 border_none">
+                              <h4>
+                                ports <i className="ri-arrow-down-s-line" />
+                              </h4>
+                              <div className="mydiv">
+                                <Select
+                                  options={port}
+                                  value={selectedPort}
+                                  onChange={setSelectedPort}
+                                  placeholder="Select Port"
+                                />
+                              </div>
+                            </div>
+                            <div className="filter level-filter level-req">
+                              <div id="rangeSlider" className="range-slider">
+                                <label>Duration:</label>
+                                <div className="number-group">
+                                  <input
+                                    className="number-input"
+                                    type="number"
+                                    defaultValue={10}
+                                    min={0}
+                                    max={50}
+                                    value={duration}
+                                    onChange={handleDurationChange}
+                                  />{" "}
+                                  -
+                                  <input
+                                    className="number-input"
+                                    type="number"
+                                    defaultValue={50}
+                                    min={0}
+                                    max={50}
+                                    disabled
+                                  />{" "}
+                                  Nights
+                                </div>
+                                <div className="range-group">
+                                  <input
+                                    id="range-input"
+                                    value={duration}
+                                    onChange={handleDurationChange}
+                                    className="range-input"
+                                    defaultValue={10}
+                                    min={1}
+                                    max={50}
+                                    step={1}
+                                    type="range"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <div className="filter level-filter level-req">
+                              <div id="rangeSlider1" className="range-slider">
+                                <label>Price Range:</label>
+                                <div className="number-group">
+                                  <input
+                                    className="number-input"
+                                    type="number"
+                                    defaultValue={10}
+                                    min={0}
+                                    max={50}
+                                    value={price}
+                                    onChange={handlePriceChange}
+                                  />{" "}
+                                  -
+                                  <input
+                                    className="number-input"
+                                    type="number"
+                                    defaultValue={50}
+                                    min={0}
+                                    max={50}
+                                    disabled
+                                  />
+                                </div>
+                                <div className="range-group">
+                                  <input
+                                    id="range-input"
+                                    value={price}
+                                    onChange={handlePriceChange}
+                                    className="range-input"
+                                    defaultValue={10}
+                                    min={1}
+                                    max={50}
+                                    step={1}
+                                    type="range"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            {cruiseCategory?.length ||
+                            selectedCruiseStartDate ||
+                            selectedCruiseEndDate ||
+                            selectedRegions?.value ||
+                            selectedShips?.value ||
+                            selectedPort?.value ||
+                            duration ||
+                            price ? (
+                              <div className="text-end">
+                                <a
+                                  href="#"
+                                  className="action_btn"
+                                  onClick={(e) => handleReset(e)}
                                 >
-                                  {visibleCount === 5 ? "See More" : "See Less"}
-                                </button>
-                              )}
-                            </div>
-                          </div>
-                          <div className="button1">
-                            <h4>
-                              DEPARTURE MONTH{" "}
-                              <i className="ri-arrow-down-s-line" />
-                            </h4>
-                            <div className="mydiv">
-                              <Select
-                                options={cruiseDate}
-                                value={selectedCruiseDate}
-                                onChange={setSelectedCruiseDate}
-                                placeholder="Select Date"
-                                className="select_area"
-                                classNamePrefix="select_area"
-                              />
-                            </div>
-                          </div>
-                          <div className="button1">
-                            <h4>
-                              Destination <i className="ri-arrow-down-s-line" />
-                            </h4>
-                            <div className="mydiv">
-                              <Select
-                                options={regions}
-                                value={selectedRegions}
-                                onChange={setSelectedRegions}
-                                placeholder="Select Destination"
-                                className="select_area "
-                                classNamePrefix="select_area"
-                              />
-                            </div>
-                          </div>
-                          <div className="button1">
-                            <h4>
-                              Cruise Line <i className="ri-arrow-down-s-line" />
-                            </h4>
-                            <div className="mydiv">
-                              <option value={regionFromURL}>
-                                {regionFromURL}
-                              </option>
-                            </div>
-                          </div>
-                          <div className="button1">
-                            <h4>
-                              CRUISE SHIP <i className="ri-arrow-down-s-line" />
-                            </h4>
-                            <div className="mydiv">
-                              <Select
-                                options={ships}
-                                value={selectedShips}
-                                onChange={setSelectedShips}
-                                placeholder="Select Ship"
-                              />
-                            </div>
-                          </div>
-                          <div className="button1 border_none">
-                            <h4>
-                              ports <i className="ri-arrow-down-s-line" />
-                            </h4>
-                            <div className="mydiv">
-                              <Select
-                                options={port}
-                                value={selectedPort}
-                                onChange={setSelectedPort}
-                                placeholder="Select Port"
-                              />
-                            </div>
-                          </div>
-                          <div className="filter level-filter level-req">
-                            <div id="rangeSlider" className="range-slider">
-                              <label>Duration:</label>
-                              <div className="number-group">
-                                <input
-                                  className="number-input"
-                                  type="number"
-                                  defaultValue={10}
-                                  min={0}
-                                  max={50}
-                                  value={duration}
-                                  onChange={handleDurationChange}
-                                />{" "}
-                                -
-                                <input
-                                  className="number-input"
-                                  type="number"
-                                  defaultValue={50}
-                                  min={0}
-                                  max={50}
-                                  disabled
-                                />{" "}
-                                Nights
+                                  Reset
+                                </a>
                               </div>
-                              <div className="range-group">
-                                <input
-                                  id="range-input"
-                                  value={duration}
-                                  onChange={handleDurationChange}
-                                  className="range-input"
-                                  defaultValue={10}
-                                  min={1}
-                                  max={50}
-                                  step={1}
-                                  type="range"
-                                />
-                              </div>
-                            </div>
+                            ) : (
+                              <></>
+                            )}
                           </div>
-                          <div className="filter level-filter level-req">
-                            <div id="rangeSlider1" className="range-slider">
-                              <label>Price Range:</label>
-                              <div className="number-group">
-                                <input
-                                  className="number-input"
-                                  type="number"
-                                  defaultValue={10}
-                                  min={0}
-                                  max={50}
-                                  value={price}
-                                  onChange={handlePriceChange}
-                                />{" "}
-                                -
-                                <input
-                                  className="number-input"
-                                  type="number"
-                                  defaultValue={50}
-                                  min={0}
-                                  max={50}
-                                  disabled
-                                />
-                              </div>
-                              <div className="range-group">
-                                <input
-                                  id="range-input"
-                                  value={price}
-                                  onChange={handlePriceChange}
-                                  className="range-input"
-                                  defaultValue={10}
-                                  min={1}
-                                  max={50}
-                                  step={1}
-                                  type="range"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          {cruiseCategory?.length ||
-                          selectedCruiseDate?.value ||
-                          selectedRegions?.value ||
-                          selectedShips?.value ||
-                          selectedPort?.value ||
-                          duration ||
-                          price ? (
-                            <div className="text-end">
-                              <a
-                                href="#"
-                                className="action_btn"
-                                onClick={(e) => handleReset(e)}
-                              >
-                                Reset
-                              </a>
-                            </div>
-                          ) : (
-                            <></>
-                          )}
-                        </div>
+                        </form>
                       </div>
                       <div className="col-lg-9">
                         <div className="cruise_info">
@@ -1083,7 +1177,7 @@ const Oprator = () => {
                             </select>
                           </div>
                         </div>
-                        {[...shipDetailsFromDB, ...shipDetails]?.length ? (
+                        {[...shipDetailsFromDB, ...shipDetails]?.length > 0 && !searchBySide ? (
                           <>
                             {/* {console.log("55555555555", shipDetailsFromDB, shipDetails)} */}
                             {shipDetailsFromDB
@@ -1611,8 +1705,14 @@ const Oprator = () => {
                                 );
                               })}
                           </>
-                        ) : (
-                          <div className="d-flex justify-content-center align-items-center h-25">
+                        ) : [...shipDetailsFromDB, ...shipDetails]?.length ===
+                            0 && isloading ? (
+                          <div
+                            className="d-flex justify-content-center align-items-center "
+                            style={{
+                              minHeight: "70dvh",
+                            }}
+                          >
                             <div
                               className="spinner-border text-secondary"
                               role="status"
@@ -1620,13 +1720,34 @@ const Oprator = () => {
                               <span className="sr-only"></span>
                             </div>
                           </div>
+                        ) : [...shipDetailsFromDB, ...shipDetails]?.length ===
+                          0 ? (
+                          <div className="d-flex justify-content-center align-items-center ">
+                            No data available
+                          </div>
+                        ) : (
+                          <>
+                            {" "}
+                            <div
+                              className="d-flex justify-content-center align-items-center "
+                              style={{
+                                minHeight: "70dvh",
+                              }}
+                            >
+                              <div
+                                className="spinner-border text-secondary"
+                                role="status"
+                              >
+                                <span className="sr-only"></span>
+                              </div>
+                            </div>
+                          </>
                         )}
 
                         {/* Load More Button */}
                         {[...shipDetailsFromDB, ...shipDetails]?.length &&
                         [...shipDetailsFromDB, ...shipDetails]?.length <
-                          totalCruises &&
-                        !loading ? (
+                          totalCruises ? (
                           <div className="load_more_area my-4">
                             {!isloading ? (
                               <button
@@ -1892,12 +2013,12 @@ const Oprator = () => {
                             The Epitome of All-Inclusive Luxury
                           </h2>
                           <div
-                          dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(
-                              opratordata?.description
-                            ),
-                          }}
-                        ></div>
+                            dangerouslySetInnerHTML={{
+                              __html: DOMPurify.sanitize(
+                                opratordata?.description
+                              ),
+                            }}
+                          ></div>
                           {/* <p>{stripHTML(opratordata?.description)}</p> */}
                           <hr />
                           {/* <div className="get_in mb-3">
@@ -2242,24 +2363,24 @@ const Oprator = () => {
                             Cruises for Your Next Adventure
                           </h2>
                           <div
-                          dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(
-                              opratordata?.reasons_to_book
-                            ),
-                          }}
-                        ></div>
+                            dangerouslySetInnerHTML={{
+                              __html: DOMPurify.sanitize(
+                                opratordata?.reasons_to_book
+                              ),
+                            }}
+                          ></div>
                           {/* <p>{stripHTML(opratordata?.reasons_to_book)}</p> */}
                           <hr />
                           <div className="get_in mb-3">
                             <span>All-Inclusive Luxury</span>
                           </div>
                           <div
-                          dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(
-                              opratordata?.unique_text
-                            ),
-                          }}
-                        ></div>
+                            dangerouslySetInnerHTML={{
+                              __html: DOMPurify.sanitize(
+                                opratordata?.unique_text
+                              ),
+                            }}
+                          ></div>
                           {/* <p>{stripHTML(opratordata?.unique_text)}</p> */}
                           {/* <div className="reasons_book_slider">
                             <Slider {...settings}>

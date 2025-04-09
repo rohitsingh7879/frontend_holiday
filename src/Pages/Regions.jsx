@@ -35,7 +35,7 @@ const Regions = () => {
   const [cruiseData, setCruiseData] = useState([]);
   const [cruiseDataFromDB, setCruiseDataFromDB] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(1);
   const [sortOption, setSortOption] = useState("Recommended");
   const [shipRefData, setshipRefData] = useState([]);
   const [isloading, setIsLoading] = useState(false);
@@ -50,11 +50,13 @@ const Regions = () => {
   const [cruiseLines, setCruiseLines] = useState([]);
   const [port, setPort] = useState([]);
   const [allOperatorDetails, setAllOperatorDetails] = useState([]);
+  const [searchBySide, setSearchBySide] = useState(false);
 
   const [duration, setDuration] = useState(0);
   const [price, setPrice] = useState(0);
 
-  const [selectedCruiseDate, setSelectedCruiseDate] = useState(null);
+  const [selectedCruiseStartDate, setSelectedCruiseStartDate] = useState(null);
+  const [selectedCruiseEndDate, setSelectedCruiseEndDate] = useState(null);
   const [selectedCruiseLine, setSelectedCruiseLine] = useState(null);
   const [selectedShips, setSelectedShips] = useState(null);
   const [selectedPort, setSelectedPort] = useState(null);
@@ -91,7 +93,7 @@ const Regions = () => {
       setCruiseDataFromDB([]);
       setCruiseData([]);
       fetchRegiondata();
-      fetchShipdataFromDB()
+      fetchShipdataFromDB();
     }
   }, [regionFromURL]);
 
@@ -164,15 +166,15 @@ const Regions = () => {
       ];
       const formattedDates = uniqueDates.map((date) => {
         const dateObj = new Date(date);
-        const day = dateObj.getDate();
+        // const day = dateObj.getDate();
+        const day = String(dateObj.getDate()).padStart(2, "0");
         const monthName = dateObj.toLocaleString("default", { month: "long" });
         const year = dateObj.getFullYear();
         return {
           value: `${day} ${monthName} ${year}`,
-          label: ` ${monthName} ${year}`,
+          label: `${day} ${monthName} ${year}`,
         };
       });
-
       setCruiseDate(formattedDates);
 
       const uniqueRegions = [
@@ -206,37 +208,62 @@ const Regions = () => {
       // sortby: "recommended";
       // startingPorts: [];
 
-      const selectedCruiseDateQuery = selectedCruiseDate?.value || "";
+      const selectedCruiseStartDateQuery = selectedCruiseStartDate || "";
+      const selectedCruiseEndDateQuery = selectedCruiseEndDate || "";
       const cruiseLineQuery = selectedCruiseLine?.value || "";
       const regionQuery = regionFromURL || "";
       const shipQuery = selectedShips?.value || "";
       const portQuery = selectedPort?.value || "";
       const durationQuery = para2 || "";
       const priceQuery = para1 || "";
-      let queryParams = new URLSearchParams({
-        dates: [selectedCruiseDateQuery],
-        operators: [cruiseLineQuery],
-        regions: [regionQuery],
-        ships: [shipQuery],
-        ports: [portQuery],
-        maxDuration: durationQuery,
-        maxPrice: priceQuery,
-      });
+
+      let queryParams = new URLSearchParams();
+
+      if (selectedCruiseStartDateQuery) {
+        queryParams.append(
+          "start_date_range_beginning",
+          selectedCruiseStartDateQuery
+        );
+      }
+      if (selectedCruiseEndDateQuery) {
+        queryParams.append("start_date_range_end", selectedCruiseEndDate);
+      }
+
+      if (cruiseLineQuery) {
+        queryParams.append("operator", cruiseLineQuery);
+      }
+
+      if (shipQuery) {
+        queryParams.append("ship_name", shipQuery);
+      }
+
+      if (portQuery) {
+        queryParams.append("start_from", portQuery);
+      }
+
+      if (durationQuery) {
+        queryParams.append("cruise_nights", durationQuery);
+      }
+
+      if (priceQuery) {
+        queryParams.append("maxPrice", priceQuery);
+      }
+
       // console.log([regionQuery],'888')
       const response = await fetch(
         `${API_BASE_URL}?app_id=${APP_ID}&token=${TOKEN}&region=${
           regionFromURL || selectedRegion
-        }&page=${currentPage}&limit=${1}&${queryParams?.toString()}`,
+        }&page=${currentPage}&limit=${itemsPerPage}&${queryParams?.toString()}`,
         { headers: { Accept: "application/json;api_version=2" } }
       );
 
       const getregions = await response.json();
 
-      if (getregions && getregions.total) {
+      if (getregions && getregions.total > 0) {
         setTotalCruises(getregions.total);
       }
 
-      if (getregions && getregions.cruises) {
+      if (getregions && getregions?.cruises?.length > 0) {
         const cruisedataResult = getregions?.cruises?.map((cruise) => ({
           shipurl: cruise.ship,
           shipname: cruise.ship_title,
@@ -262,7 +289,7 @@ const Regions = () => {
         if (currentPage > 1) {
           setCruiseData((prevData) => [...prevData, ...cruisedataResult]);
         } else {
-          setCruiseData([...cruisedataResult]);
+          setCruiseData(cruisedataResult);
         }
 
         const shipPromises = cruisedataResult?.map((cruise) =>
@@ -282,9 +309,18 @@ const Regions = () => {
         await Promise.all([...shipPromises, ...portPromises]);
 
         setIsLoading(false);
+        setSearchBySide(false);
+      } else {
+        setCruiseData([]);
+        setShipDetails([]);
+        setTotalCruises(0);
+        setIsLoading(false);
+      setSearchBySide(false)
       }
     } catch (error) {
       setIsLoading(false);
+      setSearchBySide(false);
+
       console.error("Error fetching region data:", error);
     }
   };
@@ -426,8 +462,15 @@ const Regions = () => {
   };
 
   useEffect(() => {
-    fetchRegiondata();
-    const selectedCruiseDateQuery = selectedCruiseDate?.value || "";
+    // if (currentPage === 1) {
+    //   setSearchBySide(true);
+    //   setCruiseData([]);
+    //   setCruiseDataFromDB([]);
+    //   setShipDetails([]);
+    //   setShipDetailsFromDB([]);
+    // }
+    const selectedCruiseStartDateQuery = selectedCruiseStartDate || "";
+    const selectedCruiseEndDateQuery = selectedCruiseEndDate || "";
     const cruiseLineQuery = selectedCruiseLine?.value || "";
     const shipQuery = selectedShips?.value || "";
     const portQuery = selectedPort?.value || "";
@@ -435,24 +478,30 @@ const Regions = () => {
     const priceQuery = price || "";
 
     if (
-      selectedCruiseDateQuery ||
+      selectedCruiseStartDateQuery ||
+      selectedCruiseEndDateQuery ||
       cruiseLineQuery ||
       shipQuery ||
       portQuery ||
       durationQuery ||
       priceQuery
     ) {
+      if (currentPage === 1) {
+        setSearchBySide(true);
+      }
+      fetchRegiondata();
       searchSideBarCruises();
     } else {
+      fetchRegiondata();
       fetchShipdataFromDB();
     }
   }, [
     currentPage,
-    selectedCruiseDate,
+    selectedCruiseStartDate,
+    selectedCruiseEndDate,
     selectedCruiseLine,
     selectedShips,
     selectedPort,
-    
   ]);
 
   const handleSortChange = (e) => {
@@ -478,7 +527,8 @@ const Regions = () => {
   const searchSideBarCruises = async (para1, para2) => {
     try {
       setLoading(true);
-      const selectedCruiseDateQuery = selectedCruiseDate?.value || "";
+      const selectedCruiseStartDateQuery = selectedCruiseStartDate || "";
+      const selectedCruiseEndDateQuery = selectedCruiseEndDate || "";
       const cruiseLineQuery = selectedCruiseLine?.value || "";
       const regionQuery = regionFromURL || "";
       const shipQuery = selectedShips?.value || "";
@@ -487,7 +537,8 @@ const Regions = () => {
       const priceQuery = para1 || "";
       // const sortingQuery = sortOption || "";
       let queryParams = new URLSearchParams({
-        departure_month: selectedCruiseDateQuery,
+        departure_month_start: selectedCruiseStartDateQuery,
+        departure_month_end: selectedCruiseEndDateQuery,
         destination: regionQuery,
         cruise_line: cruiseLineQuery,
         cruise_ship: shipQuery,
@@ -500,7 +551,8 @@ const Regions = () => {
       });
 
       if (
-        !selectedCruiseDateQuery &&
+        !selectedCruiseStartDateQuery &&
+        !selectedCruiseEndDateQuery &&
         !cruiseLineQuery &&
         !regionQuery &&
         !shipQuery &&
@@ -593,7 +645,8 @@ const Regions = () => {
     setShipDetails([]);
     setShipDetailsFromDB([]);
 
-    setSelectedCruiseDate("");
+    setSelectedCruiseStartDate("");
+    setSelectedCruiseEndDate("");
     setSelectedCruiseLine("");
     setSelectedShips("");
     setSelectedPort("");
@@ -670,171 +723,195 @@ const Regions = () => {
         <div className="container">
           <div className="row">
             <div className="col-lg-3">
-              <div className="ship_left_area">
-                <div className="button1">
-                  <h4>
-                    DEPARTURE MONTH <i className="ri-arrow-down-s-line" />
-                  </h4>
-                  <div className="mydiv">
-                    {/* <select className="select_area">
-                      <option>Departure</option>
-                      <option>Departure</option>
-                    </select> */}
-                    <Select
-                      options={cruiseDate}
-                      value={selectedCruiseDate}
-                      onChange={setSelectedCruiseDate}
-                      placeholder="Select Date"
-                      className="select_area"
-                      classNamePrefix="select_area"
-                    />
-                  </div>
-                </div>
-                <div className="button1">
-                  <h4>
-                    Destination <i className="ri-arrow-down-s-line" />
-                  </h4>
-                  <div className="mydiv">
-                    <select className="select_area form-select">
-                      <option value={regionFromURL}>{regionFromURL}</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="button1">
-                  <h4>
-                    Cruise Line <i className="ri-arrow-down-s-line" />
-                  </h4>
-                  <div className="mydiv">
-                    <Select
-                      options={cruiseLines}
-                      value={selectedCruiseLine}
-                      onChange={setSelectedCruiseLine}
-                      placeholder="Select Cruise Line"
-                    />
-                  </div>
-                </div>
-                <div className="button1">
-                  <h4>
-                    CRUISE SHIP <i className="ri-arrow-down-s-line" />
-                  </h4>
-                  <div className="mydiv">
-                    <Select
-                      options={ships}
-                      value={selectedShips}
-                      onChange={setSelectedShips}
-                      placeholder="Select Ship"
-                    />
-                  </div>
-                </div>
-                <div className="button1 border_none">
-                  <h4>
-                    ports <i className="ri-arrow-down-s-line" />
-                  </h4>
-                  <div className="mydiv">
-                    <Select
-                      options={port}
-                      value={selectedPort}
-                      onChange={setSelectedPort}
-                      placeholder="Select Port"
-                    />
-                  </div>
-                </div>
-                <div className="filter level-filter level-req">
-                  <div id="rangeSlider" className="range-slider">
-                    <label>Duration:</label>
-                    <div className="number-group">
+              <form action="" className="scroll_form" id="style-1">
+                <div className="ship_left_area">
+                  <div className="button1">
+                    <h4>
+                      DEPARTURE START DATE{" "}
+                      {/* <i className="ri-arrow-down-s-line" /> */}
+                    </h4>
+                    <div className="mydiv">
+                      {/* <Select
+                                  options={cruiseDate}
+                                  value={selectedCruiseStartDate}
+                                  onChange={setSelectedCruiseStartDate}
+                                  placeholder="Select Date"
+                                  className="select_area"
+                                  classNamePrefix="select_area"
+                                /> */}
                       <input
-                        className="number-input"
-                        type="number"
-                        defaultValue={10}
-                        min={0}
-                        max={50}
-                        value={duration}
-                        onChange={handleDurationChange}
-                      />{" "}
-                      -
-                      <input
-                        className="number-input"
-                        type="number"
-                        defaultValue={50}
-                        min={0}
-                        max={50}
-                        disabled
-                      />{" "}
-                      Nights
-                    </div>
-                    <div className="range-group">
-                      <input
-                        id="range-input"
-                        value={duration}
-                        onChange={handleDurationChange}
-                        className="range-input"
-                        defaultValue={10}
-                        min={1}
-                        max={50}
-                        step={1}
-                        type="range"
+                        type="date"
+                        className="form-control"
+                        onChange={(e) =>
+                          setSelectedCruiseStartDate(e.target.value)
+                        }
                       />
                     </div>
                   </div>
-                </div>
-                <div className="filter level-filter level-req">
-                  <div id="rangeSlider1" className="range-slider">
-                    <label>Price Range:</label>
-                    <div className="number-group">
+                  <div className="button1">
+                    <h4>
+                      DEPARTURE END DATE
+                      {/* <i className="ri-arrow-down-s-line" /> */}
+                    </h4>
+                    <div className="mydiv">
                       <input
-                        className="number-input"
-                        type="number"
-                        defaultValue={10}
-                        min={0}
-                        max={50}
-                        value={price}
-                        onChange={handlePriceChange}
-                      />{" "}
-                      -
-                      <input
-                        className="number-input"
-                        type="number"
-                        defaultValue={50}
-                        min={0}
-                        max={50}
-                        disabled
-                      />
-                    </div>
-                    <div className="range-group">
-                      <input
-                        id="range-input"
-                        value={price}
-                        onChange={handlePriceChange}
-                        className="range-input"
-                        defaultValue={10}
-                        min={1}
-                        max={50}
-                        step={1}
-                        type="range"
+                        type="date"
+                        className="form-control"
+                        min={selectedCruiseStartDate}
+                        disabled={!selectedCruiseStartDate}
+                        onChange={(e) =>
+                          setSelectedCruiseEndDate(e.target.value)
+                        }
                       />
                     </div>
                   </div>
-                </div>
-                {selectedCruiseDate?.value ||
-                selectedCruiseLine?.value ||
-                selectedShips?.value ||
-                selectedPort?.value ||
-                duration ||
-                price ? (
-                  <div className="text-end">
-                    <a
-                      href="#"
-                      className="action_btn"
-                      onClick={(e) => handleReset(e)}
-                    >
-                      Reset
-                    </a>
+                  <div className="button1">
+                    <h4>
+                      Destination <i className="ri-arrow-down-s-line" />
+                    </h4>
+                    <div className="mydiv">
+                      <select className="select_area form-select">
+                        <option value={regionFromURL}>{regionFromURL}</option>
+                      </select>
+                    </div>
                   </div>
-                ) : (
-                  <></>
-                )}
-              </div>
+                  <div className="button1">
+                    <h4>
+                      Cruise Line <i className="ri-arrow-down-s-line" />
+                    </h4>
+                    <div className="mydiv">
+                      <Select
+                        options={cruiseLines}
+                        value={selectedCruiseLine}
+                        onChange={setSelectedCruiseLine}
+                        placeholder="Select Cruise Line"
+                      />
+                    </div>
+                  </div>
+                  <div className="button1">
+                    <h4>
+                      CRUISE SHIP <i className="ri-arrow-down-s-line" />
+                    </h4>
+                    <div className="mydiv">
+                      <Select
+                        options={ships}
+                        value={selectedShips}
+                        onChange={setSelectedShips}
+                        placeholder="Select Ship"
+                      />
+                    </div>
+                  </div>
+                  <div className="button1 border_none">
+                    <h4>
+                      ports <i className="ri-arrow-down-s-line" />
+                    </h4>
+                    <div className="mydiv">
+                      <Select
+                        options={port}
+                        value={selectedPort}
+                        onChange={setSelectedPort}
+                        placeholder="Select Port"
+                      />
+                    </div>
+                  </div>
+                  <div className="filter level-filter level-req">
+                    <div id="rangeSlider" className="range-slider">
+                      <label>Duration:</label>
+                      <div className="number-group">
+                        <input
+                          className="number-input"
+                          type="number"
+                          defaultValue={10}
+                          min={0}
+                          max={50}
+                          value={duration}
+                          onChange={handleDurationChange}
+                        />{" "}
+                        -
+                        <input
+                          className="number-input"
+                          type="number"
+                          defaultValue={50}
+                          min={0}
+                          max={50}
+                          disabled
+                        />{" "}
+                        Nights
+                      </div>
+                      <div className="range-group">
+                        <input
+                          id="range-input"
+                          value={duration}
+                          onChange={handleDurationChange}
+                          className="range-input"
+                          defaultValue={10}
+                          min={1}
+                          max={50}
+                          step={1}
+                          type="range"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="filter level-filter level-req">
+                    <div id="rangeSlider1" className="range-slider">
+                      <label>Price Range:</label>
+                      <div className="number-group">
+                        <input
+                          className="number-input"
+                          type="number"
+                          defaultValue={10}
+                          min={0}
+                          max={50}
+                          value={price}
+                          onChange={handlePriceChange}
+                        />{" "}
+                        -
+                        <input
+                          className="number-input"
+                          type="number"
+                          defaultValue={50}
+                          min={0}
+                          max={50}
+                          disabled
+                        />
+                      </div>
+                      <div className="range-group">
+                        <input
+                          id="range-input"
+                          value={price}
+                          onChange={handlePriceChange}
+                          className="range-input"
+                          defaultValue={10}
+                          min={1}
+                          max={50}
+                          step={1}
+                          type="range"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  {selectedCruiseStartDate ||
+                  selectedCruiseEndDate ||
+                  selectedCruiseLine?.value ||
+                  selectedShips?.value ||
+                  selectedPort?.value ||
+                  duration ||
+                  price ? (
+                    <div className="text-end">
+                      <a
+                        href="#"
+                        className="action_btn"
+                        onClick={(e) => handleReset(e)}
+                      >
+                        Reset
+                      </a>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              </form>
             </div>
             <div className="col-lg-9">
               <div className="cruise_info">
@@ -858,7 +935,8 @@ const Regions = () => {
                   </select>
                 </div>
               </div>
-              {[...shipDetailsFromDB, ...shipDetails]?.length ? (
+              {[...shipDetailsFromDB, ...shipDetails]?.length > 0 &&
+              !searchBySide ? (
                 <>
                   {/* {console.log("55555555555", shipDetailsFromDB, shipDetails)} */}
                   {shipDetailsFromDB
@@ -1322,19 +1400,40 @@ const Regions = () => {
                       );
                     })}
                 </>
-              ) : ![...shipDetailsFromDB, ...shipDetails]?.length && loading ? (
+              ) : ![...shipDetailsFromDB, ...shipDetails]?.length && isloading ? (
                 <div className="d-flex justify-content-center align-items-center h-25">
                   <div className="spinner-border text-secondary" role="status">
                     <span className="sr-only"></span>
                   </div>
                 </div>
-              ) : (
-                <div className="d-flex text-center">No Data Available</div>
-              )}
+             ) : [...shipDetailsFromDB, ...shipDetails]?.length ===
+             0 ? (
+             <div className="d-flex justify-content-center align-items-center ">
+               No data available
+             </div>
+           ) : (
+             <>
+               {" "}
+               <div
+                 className="d-flex justify-content-center align-items-center "
+                 style={{
+                   minHeight: "70dvh",
+                 }}
+               >
+                 <div
+                   className="spinner-border text-secondary"
+                   role="status"
+                 >
+                   <span className="sr-only"></span>
+                 </div>
+               </div>
+             </>
+           )}
+
 
               {[...shipDetailsFromDB, ...shipDetails]?.length &&
-              [...shipDetailsFromDB, ...shipDetails]?.length < totalCruises &&
-              !loading ? (
+              [...shipDetailsFromDB, ...shipDetails]?.length < totalCruises 
+           ? (
                 <div className="load_more_area">
                   {!isloading ? (
                     <button
