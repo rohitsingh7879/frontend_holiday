@@ -16,6 +16,7 @@ import endpoints from "../utils/endpoints";
 import generateCruiseDetailsUrl from "../utils/DetailsURL";
 import "../assets/css/inner.css";
 import "../App.css";
+import { debounce } from "lodash";
 
 const CruiseCollection = () => {
   const location = useLocation();
@@ -36,7 +37,12 @@ const CruiseCollection = () => {
   const [port, setPort] = useState([]);
   const [cruiseCategory, setCruiseCategory] = useState([]);
   const [selectedRegions, setSelectedRegions] = useState(null);
-  const [selectedCruiseDate, setSelectedCruiseDate] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(1);
+
+  const [selectedCruiseStartDate, setSelectedCruiseStartDate] = useState(null);
+  const [selectedCruiseEndDate, setSelectedCruiseEndDate] = useState(null);
+
   const [selectedCruiseLine, setSelectedCruiseLine] = useState(null);
   const [selectedShips, setSelectedShips] = useState(null);
   const [selectedPort, setSelectedPort] = useState(null);
@@ -62,33 +68,33 @@ const CruiseCollection = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const fetchAllCruiseLineData = async () => {
-    fetch(`${import.meta.env.VITE_API_URL + endpoints?.newpackage}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
+  // const fetchAllCruiseLineData = async () => {
+  //   fetch(`${import.meta.env.VITE_API_URL + endpoints?.newpackage}`)
+  //     .then((response) => {
+  //       if (!response.ok) {
+  //         throw new Error("Network response was not ok");
+  //       }
 
-        return response.json();
-      })
-      .then((data) => {
-        setSpinner(false);
-        setData(data?.data);
-        setTotalCount(data.data.length);
-        //console.log("Ser", data.data);
-      })
-      .catch((error) => {
-        console.error("API Error:", error);
-        setError(error);
-        setSpinner(false);
-      });
-  };
-  useEffect(() => {
-    if (categories) {
-      return;
-    }
-    fetchAllCruiseLineData();
-  }, []);
+  //       return response.json();
+  //     })
+  //     .then((data) => {
+  //       setSpinner(false);
+  //       setData(data?.data);
+  //       setTotalCount(data.data.length);
+  //       //console.log("Ser", data.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error("API Error:", error);
+  //       setError(error);
+  //       setSpinner(false);
+  //     });
+  // };
+  // useEffect(() => {
+  //   if (categories) {
+  //     return;
+  //   }
+  //   fetchAllCruiseLineData();
+  // }, []);
 
   const API_BASE_URL = "https://www.widgety.co.uk/api/cruises.json";
   const APP_ID = "9f8ae7c620357e30f59d1cf1e167ddb4f5b6f1ce";
@@ -167,7 +173,7 @@ const CruiseCollection = () => {
       const formattedDates = uniqueDates.map((date) => {
         const dateObj = new Date(date);
         // const day = dateObj.getDate();
-        const day = String(dateObj.getDate()).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, "0");
         const monthName = dateObj.toLocaleString("default", { month: "long" });
         const year = dateObj.getFullYear();
         return {
@@ -207,61 +213,78 @@ const CruiseCollection = () => {
     );
   };
 
-  const handleDurationChange = (event) => {
-    setDuration(event.target.value);
-  };
-  const handlePriceChange = (event) => {
-    setPrice(event.target.value);
-  };
-
   //console.log("-- selectedCruiseDate---", selectedCruiseDate);
-  const searchSideBarCruises = async () => {
+  const searchSideBarCruises = async (priceC, durationC) => {
     try {
       const cruiseCategoryQuery = cruiseCategory || [];
-      const selectedCruiseDateQuery = selectedCruiseDate?.value || "";
+      const selectedCruiseStartDateQuery = selectedCruiseStartDate || "";
+      const selectedCruiseEndDateQuery = selectedCruiseEndDate || "";
       const cruiseLineQuery = selectedCruiseLine?.value || "";
       const regionQuery = selectedRegions?.value || "";
       const shipQuery = selectedShips?.value || "";
       const portQuery = selectedPort?.value || "";
-      const durationQuery = duration || "";
-      const priceQuery = price || "";
-      const sortingQuery = selectedSortingOption?.value || "";
-      let queryParams = new URLSearchParams({
-        cruise_category: JSON.stringify(cruiseCategoryQuery),
-        departure_month: selectedCruiseDateQuery,
-        destination: regionQuery,
-        cruise_line: cruiseLineQuery,
-        cruise_ship: shipQuery,
-        ports: portQuery,
-        duration: durationQuery,
-        price_range: priceQuery,
-        recommended: sortingQuery,
-      });
+      const durationQuery = durationC || "";
+      const priceQuery = priceC || "";
+      // const sortingQuery = selectedSortingOption?.value || "";
 
-      if (
-        !cruiseCategoryQuery &&
-        !selectedCruiseDateQuery &&
-        !cruiseLineQuery &&
-        !regionQuery &&
-        !shipQuery &&
-        !portQuery &&
-        !durationQuery &&
-        !priceQuery &&
-        !sortingQuery
-      ) {
-        return;
+      let queryParams = new URLSearchParams();
+
+      if (cruiseCategoryQuery?.length > 0) {
+        queryParams.append(
+          "cruise_category",
+          JSON.stringify(cruiseCategoryQuery)
+        );
+      }
+
+      if (selectedCruiseStartDateQuery) {
+        queryParams.append(
+          "departure_month_start",
+          selectedCruiseStartDateQuery
+        );
+      }
+      if (selectedCruiseEndDateQuery) {
+        queryParams.append("departure_month_end", selectedCruiseEndDate);
+      }
+
+      if (cruiseLineQuery) {
+        queryParams.append("cruise_line", cruiseLineQuery);
+      }
+
+      if (regionQuery) {
+        queryParams.append("destination", regionQuery);
+      }
+
+      if (shipQuery) {
+        queryParams.append("cruise_ship", shipQuery);
+      }
+
+      if (portQuery) {
+        queryParams.append("ports", portQuery);
+      }
+
+      if (durationQuery) {
+        queryParams.append("duration", durationQuery);
+      }
+
+      if (priceQuery) {
+        queryParams.append("price_range", priceQuery);
       }
       // console.log("---stungnff--",queryParams.toString());
       const response = await axios.get(
         `${
           import.meta.env.VITE_API_URL + endpoints?.newpackage
-        }searchFilter?${queryParams.toString()}`
+        }searchFilter?page=${currentPage}&limit=${limit}&${queryParams.toString()}`
       );
       //console.log("--- response dddd---",response);
       if (response && response.status == 200) {
         setSpinner(false);
-        setData(response?.data?.data);
-        setTotalCount(response?.data?.data.length);
+        const cruisedataResult = response?.data?.data;
+        if (currentPage > 1) {
+          setData((prevData) => [...prevData, ...cruisedataResult]);
+        } else {
+          setData(cruisedataResult);
+        }
+        setTotalCount(response?.data?.pagination?.total);
       } else {
         setSpinner(false);
         console.error("Error searching cruises:", response?.data?.message);
@@ -272,17 +295,33 @@ const CruiseCollection = () => {
   };
 
   useEffect(() => {
+    if (
+      cruiseCategory?.length ||
+      selectedCruiseStartDate ||
+      selectedCruiseEndDate ||
+      selectedCruiseLine ||
+      selectedRegions ||
+      selectedShips ||
+      selectedPort ||
+      duration ||
+      price
+    ) {
+      console.log("first---");
+      if (currentPage === 1) {
+        setData([]);
+      }
+    }
+    setSpinner(true);
     searchSideBarCruises();
   }, [
     cruiseCategory,
-    selectedCruiseDate,
+    selectedCruiseStartDate,
+    selectedCruiseEndDate,
     selectedCruiseLine,
     selectedRegions,
     selectedShips,
     selectedPort,
-    duration,
-    price,
-    selectedSortingOption,
+    currentPage,
   ]);
 
   useEffect(() => {
@@ -295,16 +334,18 @@ const CruiseCollection = () => {
   //console.log("CruiseCategory" , cruiseCategory)
   const handleReset = async (e) => {
     e.preventDefault();
+    setCurrentPage(1);
     setCruiseCategory([]);
     setSelectedRegions("");
-    setSelectedCruiseDate("");
+    setSelectedCruiseStartDate("");
+    setSelectedCruiseEndDate("");
     setSelectedCruiseLine("");
     setSelectedShips("");
     setSelectedPort("");
-    setDuration("");
-    setPrice("");
+    setDuration(0);
+    setPrice(0);
     setSelectedSortingOption("");
-    fetchAllCruiseLineData();
+    // fetchAllCruiseLineData();
   };
 
   const [visibleCount, setVisibleCount] = useState(5);
@@ -344,6 +385,33 @@ const CruiseCollection = () => {
     value: cat.categoryName,
     label: cat.categoryName,
   }));
+
+  const debounceApiCall = debounce((price, duration) => {
+    searchSideBarCruises(price, duration);
+  }, 1000);
+
+  const handleDurationChange = (event) => {
+    setCurrentPage(1);
+    setTotalCount();
+    setData([]);
+    setSpinner(true);
+    setDuration(event.target.value);
+    debounceApiCall(price, event.target.value);
+  };
+
+  const handlePriceChange = (event) => {
+    setCurrentPage(1);
+    setSpinner(true);
+    setTotalCount();
+    setData([]);
+    setPrice(event.target.value);
+    debounceApiCall(event.target.value, duration);
+  };
+
+  const handleLoadMore = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
   return (
     <>
       <section className="banner banner_c">
@@ -411,9 +479,10 @@ const CruiseCollection = () => {
                             <input
                               type="checkbox"
                               checked={cruiseCategory.includes(filter.value)}
-                              onChange={() =>
-                                handleCheckboxChange(filter.value)
-                              }
+                              onChange={() => {
+                                handleCheckboxChange(filter.value);
+                                setCurrentPage(1);
+                              }}
                             />{" "}
                             {filter.label}
                           </li>
@@ -432,20 +501,43 @@ const CruiseCollection = () => {
                   </div>
                   <div className="button1">
                     <h4>
-                      DEPARTURE MONTH <i className="ri-arrow-down-s-line" />
+                      DEPARTURE START DATE{" "}
+                      {/* <i className="ri-arrow-down-s-line" /> */}
                     </h4>
                     <div className="mydiv">
-                      {/* <select className="select_area">
-                        <option>Departure</option>
-                        <option>Departure</option>
-                      </select> */}
-                      <Select
-                        options={cruiseDate}
-                        value={selectedCruiseDate}
-                        onChange={setSelectedCruiseDate}
-                        placeholder="Select Date"
-                        className="select_area"
-                        classNamePrefix="select_area"
+                      {/* <Select
+                                  options={cruiseDate}
+                                  value={selectedCruiseStartDate}
+                                  onChange={setSelectedCruiseStartDate}
+                                  placeholder="Select Date"
+                                  className="select_area"
+                                  classNamePrefix="select_area"
+                                /> */}
+                      <input
+                        type="date"
+                        className="form-control"
+                        onChange={(e) => {
+                          setCurrentPage(1);
+                          setSelectedCruiseStartDate(e.target.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className="button1">
+                    <h4>
+                      DEPARTURE END DATE
+                      {/* <i className="ri-arrow-down-s-line" /> */}
+                    </h4>
+                    <div className="mydiv">
+                      <input
+                        type="date"
+                        className="form-control"
+                        min={selectedCruiseStartDate}
+                        disabled={!selectedCruiseStartDate}
+                        onChange={(e) => {
+                          setCurrentPage(1);
+                          setSelectedCruiseEndDate(e.target.value);
+                        }}
                       />
                     </div>
                   </div>
@@ -457,7 +549,10 @@ const CruiseCollection = () => {
                       <Select
                         options={regions}
                         value={selectedRegions}
-                        onChange={setSelectedRegions}
+                        onChange={(selected) => {
+                          setSelectedRegions(selected);
+                          setCurrentPage(1);
+                        }}
                         placeholder="Select Destination"
                         className="select_area "
                         classNamePrefix="select_area"
@@ -472,7 +567,10 @@ const CruiseCollection = () => {
                       <Select
                         options={cruiseLines}
                         value={selectedCruiseLine}
-                        onChange={setSelectedCruiseLine}
+                        onChange={(selected) => {
+                          setSelectedCruiseLine(selected);
+                          setCurrentPage(1);
+                        }}
                         placeholder="Select Cruise Line"
                       />
                     </div>
@@ -485,7 +583,10 @@ const CruiseCollection = () => {
                       <Select
                         options={ships}
                         value={selectedShips}
-                        onChange={setSelectedShips}
+                        onChange={(selected) => {
+                          setSelectedShips(selected);
+                          setCurrentPage(1);
+                        }}
                         placeholder="Select Ship"
                       />
                     </div>
@@ -498,7 +599,10 @@ const CruiseCollection = () => {
                       <Select
                         options={port}
                         value={selectedPort}
-                        onChange={setSelectedPort}
+                        onChange={(selected) => {
+                          setSelectedPort(selected);
+                          setCurrentPage(1);
+                        }}
                         placeholder="Select Port"
                       />
                     </div>
@@ -580,15 +684,26 @@ const CruiseCollection = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="text-end">
-                    <a
-                      href="javascript:void(0)"
-                      className="action_btn"
-                      onClick={(e) => handleReset(e)}
-                    >
-                      Reset
-                    </a>
-                  </div>
+                  {selectedCruiseStartDate ||
+                  cruiseCategory?.length ||
+                  selectedCruiseEndDate ||
+                  selectedCruiseLine?.value ||
+                  selectedShips?.value ||
+                  selectedPort?.value ||
+                  duration ||
+                  price ? (
+                    <div className="text-end">
+                      <a
+                        href="#"
+                        className="action_btn"
+                        onClick={(e) => handleReset(e)}
+                      >
+                        Reset
+                      </a>
+                    </div>
+                  ) : (
+                    <></>
+                  )}
                 </div>
               </form>
             </div>
@@ -607,7 +722,10 @@ const CruiseCollection = () => {
                   </select> */}
                   <Select
                     value={selectedSortingOption}
-                    onChange={setSelectedSortingOption}
+                    onChange={(selected) => {
+                      // setCurrentPage(1);
+                      setSelectedSortingOption(selected);
+                    }}
                     options={sortingOptions}
                     placeholder="Recommended"
                     className="select_rec"
@@ -721,14 +839,7 @@ const CruiseCollection = () => {
                                       <p>Duration</p>
                                       <span>
                                         {" "}
-                                        {item?.itinerary
-                                          ?.slice(-1)
-                                          .map((itineraryItem, index) => (
-                                            <span key={index}>
-                                              {itineraryItem.day}
-                                            </span>
-                                          ))}{" "}
-                                        Nights
+                                        {item?.cruise_nights} Nights
                                       </span>{" "}
                                       {/* Dynamic Duration */}
                                     </div>
@@ -894,8 +1005,61 @@ const CruiseCollection = () => {
                     <span className="sr-only"></span>
                   </div>
                 </div>
+              ) : data?.length === 0 && !spinner ? (
+                <div className="d-flex justify-content-center align-items-center ">
+                  No data available
+                </div>
               ) : (
-                <div className="d-flex text-center">No Data Available</div>
+                <>
+                  {" "}
+                  <div
+                    className="d-flex justify-content-center align-items-center "
+                    style={{
+                      minHeight: "70dvh",
+                    }}
+                  >
+                    <div
+                      className="spinner-border text-secondary"
+                      role="status"
+                    >
+                      <span className="sr-only"></span>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {data?.length && data?.length < totalCount ? (
+                <div className="load_more_area">
+                  {!spinner ? (
+                    <button
+                      className="btn text-white"
+                      style={{
+                        backgroundColor: "#a8783d",
+                      }}
+                      onClick={() => handleLoadMore()}
+                    >
+                      Load More
+                    </button>
+                  ) : (
+                    <button
+                      style={{
+                        backgroundColor: "#a8783d",
+                      }}
+                      className="btn "
+                      type="button"
+                      disabled
+                    >
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                      <span className="sr-only">Loading...</span>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <></>
               )}
             </div>
           </div>

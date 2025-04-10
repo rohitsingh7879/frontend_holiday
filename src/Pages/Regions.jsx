@@ -35,7 +35,7 @@ const Regions = () => {
   const [cruiseData, setCruiseData] = useState([]);
   const [cruiseDataFromDB, setCruiseDataFromDB] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortOption, setSortOption] = useState("Recommended");
   const [shipRefData, setshipRefData] = useState([]);
   const [isloading, setIsLoading] = useState(false);

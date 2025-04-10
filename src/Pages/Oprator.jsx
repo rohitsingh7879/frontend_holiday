@@ -42,7 +42,7 @@ const Oprator = () => {
   const [loading, setLoading] = useState(true);
   const [searchBySide, setSearchBySide] = useState(false);
 
-  const [itemsPerPage, setItemsPerPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [shipRefData, setshipRefData] = useState([]);
   const [shipDetailsFromDB, setShipDetailsFromDB] = useState([]);
   const [cruiseDataFromDB, setCruiseDataFromDB] = useState([]);
@@ -338,20 +338,19 @@ const Oprator = () => {
 
         await Promise.all([...shipPromises, ...portPromises]);
         setIsLoading(false);
-      setSearchBySide(false)
-
+        setSearchBySide(false);
       } else {
         setCruiseData([]);
         setShipDetails([]);
         setTotalCruises(0);
         setIsLoading(false);
-      setSearchBySide(false)
+        setSearchBySide(false);
 
         console.log("No cruises found for this operator.");
       }
     } catch (error) {
       setIsLoading(false);
-      setSearchBySide(false)
+      setSearchBySide(false);
 
       console.error("Error fetching operator data:", error);
     }
@@ -739,8 +738,6 @@ const Oprator = () => {
   };
 
   useEffect(() => {
-  
-
     const selectedCruiseStartDateQuery = selectedCruiseStartDate || "";
     const selectedCruiseEndDateQuery = selectedCruiseEndDate || "";
     const catQuery = cruiseCategory || [];
@@ -759,7 +756,6 @@ const Oprator = () => {
     setIsLoading(true);
     fetchOpratordata();
 
-
     if (
       selectedCruiseStartDateQuery ||
       selectedCruiseEndDateQuery ||
@@ -770,8 +766,8 @@ const Oprator = () => {
       priceQuery ||
       catQuery.length > 0
     ) {
-      if(currentPage===1){
-      setSearchBySide(true)
+      if (currentPage === 1) {
+        setSearchBySide(true);
       }
       searchSideBarCruises();
     } else {
@@ -913,7 +909,12 @@ const Oprator = () => {
               role="tabpanel"
               aria-labelledby="nav-regent-tab"
             >
-              <div className="tab_info">
+              <div
+                className="tab_info"
+                style={{
+                  marginTop: "95px",
+                }}
+              >
                 <section className="cruise_dest1">
                   <div className="container">
                     <div className="row">
@@ -960,7 +961,7 @@ const Oprator = () => {
                             <div className="button1">
                               <h4>
                                 DEPARTURE START DATE{" "}
-                                <i className="ri-arrow-down-s-line" />
+                                {/* <i className="ri-arrow-down-s-line" /> */}
                               </h4>
                               <div className="mydiv">
                                 {/* <Select
@@ -983,7 +984,7 @@ const Oprator = () => {
                             <div className="button1">
                               <h4>
                                 DEPARTURE END DATE{" "}
-                                <i className="ri-arrow-down-s-line" />
+                                {/* <i className="ri-arrow-down-s-line" /> */}
                               </h4>
                               <div className="mydiv">
                                 <input
@@ -1177,7 +1178,8 @@ const Oprator = () => {
                             </select>
                           </div>
                         </div>
-                        {[...shipDetailsFromDB, ...shipDetails]?.length > 0 && !searchBySide ? (
+                        {[...shipDetailsFromDB, ...shipDetails]?.length > 0 &&
+                        !searchBySide ? (
                           <>
                             {/* {console.log("55555555555", shipDetailsFromDB, shipDetails)} */}
                             {shipDetailsFromDB
