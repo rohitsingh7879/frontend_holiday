@@ -38,7 +38,7 @@ const CruiseCollection = () => {
   const [cruiseCategory, setCruiseCategory] = useState([]);
   const [selectedRegions, setSelectedRegions] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [limit, setLimit] = useState(1);
+  const [limit, setLimit] = useState(10);
 
   const [selectedCruiseStartDate, setSelectedCruiseStartDate] = useState(null);
   const [selectedCruiseEndDate, setSelectedCruiseEndDate] = useState(null);
