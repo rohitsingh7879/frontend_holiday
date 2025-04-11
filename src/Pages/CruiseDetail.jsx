@@ -284,8 +284,8 @@ const CruiseDetails = () => {
 
   //  const opid = shipRefData[0]?.opid;
 
-  const itemsToShow = 4;
-  const itemsToDining = 2;
+  const itemsToShow = 1;
+  const itemsToDining = 1;
   const itemsToEnt = 1;
   const visibleDecks = showDeck ? deckplans : deckplans.slice(0, itemsToShow);
   const visibleOptions = showDing

@@ -315,7 +315,7 @@ const Regions = () => {
         setShipDetails([]);
         setTotalCruises(0);
         setIsLoading(false);
-      setSearchBySide(false)
+        setSearchBySide(false);
       }
     } catch (error) {
       setIsLoading(false);
@@ -1134,26 +1134,45 @@ const Regions = () => {
                                   )}
                                 </div>
                                 <div className="curise_amount">
-                                  <div className="final_price">
-                                    £{cruise?.price || cruise?.priceStartFrom}
-                                    pp
-                                  </div>
-                                  <div>
-                                    <Link
-                                      to={generateCruiseDetailsUrl(
-                                        "new-cruise-details",
-                                        cruise,
-                                        ship
-                                      )}
-                                      className="action_btn"
-                                      // onClick={(e) => {
-                                      //   e.preventDefault();
-                                      //   handleRefClick(cruise?.ref, ship);
-                                      // }}
-                                    >
-                                      View Deal
-                                    </Link>
-                                  </div>
+                                  {
+                                    <>
+                                      <div className="final_price">
+                                        {[
+                                          "",
+                                          null,
+                                          undefined,
+                                          0,
+                                          "0",
+                                          "0.00",
+                                          "000",
+                                        ].includes(
+                                          cruise?.price ||
+                                            cruise?.priceStartFrom
+                                        ) ? (
+                                          <span>CALL US</span>
+                                        ) : (
+                                          <>
+                                            £
+                                            {cruise?.price ||
+                                              cruise?.priceStartFrom}
+                                            pp
+                                          </>
+                                        )}
+                                      </div>
+                                      <div>
+                                        <Link
+                                          to={generateCruiseDetailsUrl(
+                                            "new-cruise-details",
+                                            cruise,
+                                            ship
+                                          )}
+                                          className="action_btn"
+                                        >
+                                          View Deal
+                                        </Link>
+                                      </div>
+                                    </>
+                                  }
                                 </div>
                               </div>
                             </div>
@@ -1369,29 +1388,49 @@ const Regions = () => {
                                     <></>
                                   )}
                                 </div>
-                                <div className="curise_amount">
-                                  <div className="final_price">
-                                    £{cruise?.price || cruise?.priceStartFrom}
-                                    pp
-                                  </div>
-                                  <div>
-                                    <Link
-                                      // to={`/CruiseDetail/${ship?.shipname
-                                      //   ?.replace(/\s+/g, "-")
-                                      //   ?.toLowerCase()}`}
-                                      className="action_btn"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        handleRefClick(
-                                          cruise?.ref,
-                                          ship,
-                                          cruise
-                                        );
-                                      }}
-                                    >
-                                      View Deal
-                                    </Link>
-                                  </div>
+                                <div className="curise_amount ">
+                                  {
+                                    <>
+                                      <div className="final_price ">
+                                        {[
+                                          "",
+                                          null,
+                                          undefined,
+                                          0,
+                                          "0",
+                                          "0.00",
+                                          "000",
+                                        ].includes(
+                                          cruise?.price ||
+                                            cruise?.priceStartFrom
+                                        ) ? (
+                                          <span>CALL US</span>
+                                        ) : (
+                                          <>
+                                            £
+                                            {cruise?.price ||
+                                              cruise?.priceStartFrom}
+                                            pp
+                                          </>
+                                        )}
+                                      </div>
+                                      <div>
+                                        <Link
+                                          className="action_btn"
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            handleRefClick(
+                                              cruise?.ref,
+                                              ship,
+                                              cruise
+                                            );
+                                          }}
+                                        >
+                                          View Deal
+                                        </Link>
+                                      </div>
+                                    </>
+                                  }
                                 </div>
                               </div>
                             </div>
@@ -1400,40 +1439,38 @@ const Regions = () => {
                       );
                     })}
                 </>
-              ) : ![...shipDetailsFromDB, ...shipDetails]?.length && isloading ? (
+              ) : ![...shipDetailsFromDB, ...shipDetails]?.length &&
+                isloading ? (
                 <div className="d-flex justify-content-center align-items-center h-25">
                   <div className="spinner-border text-secondary" role="status">
                     <span className="sr-only"></span>
                   </div>
                 </div>
-             ) : [...shipDetailsFromDB, ...shipDetails]?.length ===
-             0 ? (
-             <div className="d-flex justify-content-center align-items-center ">
-               No data available
-             </div>
-           ) : (
-             <>
-               {" "}
-               <div
-                 className="d-flex justify-content-center align-items-center "
-                 style={{
-                   minHeight: "70dvh",
-                 }}
-               >
-                 <div
-                   className="spinner-border text-secondary"
-                   role="status"
-                 >
-                   <span className="sr-only"></span>
-                 </div>
-               </div>
-             </>
-           )}
-
+              ) : [...shipDetailsFromDB, ...shipDetails]?.length === 0 ? (
+                <div className="d-flex justify-content-center align-items-center ">
+                  No data available
+                </div>
+              ) : (
+                <>
+                  {" "}
+                  <div
+                    className="d-flex justify-content-center align-items-center "
+                    style={{
+                      minHeight: "70dvh",
+                    }}
+                  >
+                    <div
+                      className="spinner-border text-secondary"
+                      role="status"
+                    >
+                      <span className="sr-only"></span>
+                    </div>
+                  </div>
+                </>
+              )}
 
               {[...shipDetailsFromDB, ...shipDetails]?.length &&
-              [...shipDetailsFromDB, ...shipDetails]?.length < totalCruises 
-           ? (
+              [...shipDetailsFromDB, ...shipDetails]?.length < totalCruises ? (
                 <div className="load_more_area">
                   {!isloading ? (
                     <button

@@ -130,16 +130,22 @@ const Cruisesearch = () => {
       });
 
       if (cruiseTypeQuery) queryParams.append("cruise_type", cruiseTypeQuery);
+      if (regionQuery) queryParams.append("region", regionQuery);
 
-      const result = await axios.get(`${API_BASE_URL}?${queryParams.toString()}`, {
-        headers: { 'Accept': 'application/json;api_version=2' }
-      });
+      // const result = await axios.get(`${API_BASE_URL}?${queryParams.toString()}`, {
+      //   headers: { 'Accept': 'application/json;api_version=2' }
+      // });
 
-      if (result && result?.status === 200) {
-        navigate("/cruise-deals", { state: { results: result?.data?.cruises } });
-      } else {
-        console.log("Error in searching...");
-      }
+      // if (result && result?.status === 200) {
+        navigate("/cruise-deals", { 
+          state: { 
+            searchQueryParams: queryParams.toString() 
+          } 
+        });
+        
+      // } else {
+      //   console.log("Error in searching...");
+      // }
     } catch (error) {
       console.error("Error searching cruises:", error);
     }

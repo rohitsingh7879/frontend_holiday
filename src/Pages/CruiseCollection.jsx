@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
 import { Link, useLocation } from "react-router-dom";
 import banner from "../assets/images/collection_banner.jpg";
@@ -968,29 +968,43 @@ const CruiseCollection = () => {
                               </div>
                               <div className="col-lg-6">
                                 <div className="curise_amount">
-                                  <div className="final_price">
-                                    £
-                                    {item?.priceStartFrom
-                                      ? item.priceStartFrom
-                                      : 0}
-                                    pp
-                                  </div>{" "}
-                                  {/* Dynamic Price */}
-                                  <div>
-                                    <Link
-                                      // to={`/Newcruisesdetails/${item._id
-                                      //   ?.replace(/\s+/g, "-")
-                                      //   .toLowerCase()}`}
-                                      to={generateCruiseDetailsUrl(
-                                        "new-cruise-details",
-                                        item
-                                      )}
-                                      className="action_btn"
-                                    >
-                                      View Deal
-                                    </Link>
-                                  </div>{" "}
-                                  {/* Static */}
+                                  {
+                                    <>
+                                      <div className="final_price">
+                                        {[
+                                          "",
+                                          null,
+                                          undefined,
+                                          0,
+                                          "0",
+                                          "0.00",
+                                          "000",
+                                        ].includes(
+                                          item?.price || item?.priceStartFrom
+                                        ) ? (
+                                          <span>CALL US</span>
+                                        ) : (
+                                          <>
+                                            £
+                                            {item?.price ||
+                                              item?.priceStartFrom}
+                                            pp
+                                          </>
+                                        )}
+                                      </div>
+                                      <div>
+                                        <Link
+                                          to={generateCruiseDetailsUrl(
+                                            "new-cruise-details",
+                                            item
+                                          )}
+                                          className="action_btn"
+                                        >
+                                          View Deal
+                                        </Link>
+                                      </div>
+                                    </>
+                                  }
                                 </div>
                               </div>
                             </div>

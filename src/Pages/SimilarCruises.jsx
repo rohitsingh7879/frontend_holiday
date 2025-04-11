@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import moment from "moment";
 import { Link } from "react-router-dom";
+import "../assets/css/home.css";
 import generateCruiseDetailsUrl from "../utils/DetailsURL";
 
 // API URL
@@ -13,17 +14,23 @@ const TOKEN =
   "44afd9791417131255f8848f113ce05f05833d11e84c3c75b82c9db4d922ce44";
 
 const SimilarCruises = ({ cname }) => {
+  const [spinner, setSpinner] = useState(true);
   const { shipname, details } = useParams();
   const detail = details?.split("_");
   let shipName = detail ? detail[1] : "";
-  shipName=shipName?.replace("-"," ")
 
-  const formattedShipName =
-    cname ||
-    shipname 
+  if (shipName) {
+    shipName = shipName
       ?.split("-")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      ?.map((word) => word.charAt(0).toUpperCase() + word?.slice(1))
       .join(" ");
+  }
+
+  const formattedShipName = (shipName || cname || shipname)
+    ?.split("-")
+    .map((word) => word?.charAt(0)?.toUpperCase() + word?.slice(1))
+    .join(" ");
+  // console.log(formattedShipName);
 
   const [cruiseData, setCruiseData] = useState([]);
   const [shipItems, setShipItems] = useState([]);
@@ -46,7 +53,9 @@ const SimilarCruises = ({ cname }) => {
     const fetchCruiseTypes = async () => {
       try {
         const response = await fetch(
-          `${API_BASE_URL}?app_id=${APP_ID}&token=${TOKEN}&ship_name=${formattedShipName || shipName}`,
+          `${API_BASE_URL}?app_id=${APP_ID}&token=${TOKEN}&ship_name=${
+            formattedShipName || shipName
+          }`,
           {
             headers: {
               Accept: "application/json; api_version=2",
@@ -76,10 +85,13 @@ const SimilarCruises = ({ cname }) => {
 
         setShipItems(items);
 
-        items.forEach((cruise) => {
+        const shipPromises = items?.map((cruise) => {
           fetchShipData(cruise.shipurl, cruise.shipname);
         });
+        await Promise.all([...shipPromises]);
+        setSpinner(false);
       } catch (error) {
+        setSpinner(false);
         console.error("There was a problem with the fetch operation:", error);
       }
     };
@@ -130,63 +142,90 @@ const SimilarCruises = ({ cname }) => {
       <div className="container">
         <h2>Similar Cruises</h2>
         <div className="slider-wrapper" style={{ position: "relative" }}>
-          <Slider {...settings}>
-            {shipItems.map((item, index) => {
-              const cruise = cruiseData.find(
-                (cruise) => cruise.ship_title === item.shipname
-              );
-              const shipDetail = shipDetails.find(
-                (detail) => detail.shipname === item.shipname
-              );
+          {shipItems?.length > 0 && !spinner ? (
+            <Slider {...settings}>
+              {shipItems?.map((item, index) => {
+                const cruise = cruiseData.find(
+                  (cruise) => cruise.ship_title === item.shipname
+                );
+                const shipDetail = shipDetails.find(
+                  (detail) => detail.shipname === item.shipname
+                );
 
-              return (
-                <div className="coll_box" key={index}>
-                  <img
-                    src={shipDetail?.coverImage || "default-image.jpg"}
-                    className="img-fluid"
-                    alt={item.shipname}
-                  />
-                  <div className="c_data">
-                    <span>{item.shipname}</span>
-                    <p>
-                      {item?.name} | {item?.region}
-                    </p>
-                    <div className="c_datec">
-                      <div>
-                        <span>
-                          <i className="ri-calendar-todo-fill"></i> {item.night}{" "}
-                          nights - {moment(item.start).format("DD MMM YYYY")}
-                        </span>
+                return (
+                  <div className="coll_box" key={index}>
+                    <img
+                      src={shipDetail?.coverImage || "default-image.jpg"}
+                      className="img-fluid"
+                      alt={item.shipname}
+                    />
+                    <div className="c_data">
+                      <span>{item.shipname}</span>
+                      <p>
+                        {item?.name} | {item?.region}
+                      </p>
+                      <div className="c_datec">
+                        <div>
+                          <span>
+                            <i className="ri-calendar-todo-fill"></i>{" "}
+                            {item.night} nights -{" "}
+                            {moment(item.start).format("DD MMM YYYY")}
+                          </span>
+                        </div>
+                        <div>
+                          <img
+                            src={shipDetail?.profileImage || "default-logo.jpg"}
+                            className="sm_logo"
+                            alt="Profile"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <img
-                          src={shipDetail?.profileImage || "default-logo.jpg"}
-                          className="sm_logo"
-                          alt="Profile"
-                        />
+                      <hr />
+                      <div className="pricee">
+                        Cruises from <b>£ {item.price} PP</b>
                       </div>
+                      <Link
+                        // to={`/CruiseDetail/${item.shipname
+                        //   .replace(/\s+/g, "-")
+                        //   .toLowerCase()}`}
+                        className="dis_more"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleRefClick(item?.ref, cruise);
+                        }}
+                      >
+                        DISCOVER MORE
+                      </Link>
                     </div>
-                    <hr />
-                    <div className="pricee">
-                      Cruises from <b>£ {item.price} PP</b>
-                    </div>
-                    <Link
-                      // to={`/CruiseDetail/${item.shipname
-                      //   .replace(/\s+/g, "-")
-                      //   .toLowerCase()}`}
-                      className="dis_more"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleRefClick(item?.ref, cruise);
-                      }}
-                    >
-                      DISCOVER MORE
-                    </Link>
                   </div>
+                );
+              })}
+            </Slider>
+          ) : !shipItems?.length && spinner ? (
+            <div className="d-flex justify-content-center align-items-center h-25">
+              <div className="spinner-border text-secondary" role="status">
+                <span className="sr-only"></span>
+              </div>
+            </div>
+          ) : shipItems?.length === 0 && !spinner ? (
+            <div className="d-flex justify-content-center align-items-center ">
+              No data available
+            </div>
+          ) : (
+            <>
+              {" "}
+              <div
+                className="d-flex justify-content-center align-items-center "
+                style={{
+                  minHeight: "70dvh",
+                }}
+              >
+                <div className="spinner-border text-secondary" role="status">
+                  <span className="sr-only"></span>
                 </div>
-              );
-            })}
-          </Slider>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </section>
