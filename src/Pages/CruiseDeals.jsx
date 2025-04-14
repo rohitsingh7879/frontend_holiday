@@ -32,7 +32,7 @@ const CruiseDeals = () => {
   const searchQueryParams = Object.fromEntries(
     new URLSearchParams(searchQueryString)
   );
-  console.log("searchQueryParams----", searchQueryParams?.operator);
+  // console.log("searchQueryParams----", searchQueryParams?.operator);
   const [loading, setLoading] = useState(true);
   const [loadingImg, setLoadingImg] = useState(true);
 
@@ -237,6 +237,7 @@ const CruiseDeals = () => {
       if (priceQuery) {
         queryParams.append("maxPrice", priceQuery);
       }
+     
 
       // console.log([regionQuery],'888')
       const response = await fetch(

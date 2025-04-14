@@ -4,6 +4,7 @@ import "../assets/css/megamenu.css";
 import logo from "../assets/images/holiday.png";
 import endpoints from "../utils/endpoints";
 import { useMediaQuery } from "@mui/material";
+import { debounce } from "lodash";
 
 const API_OPRATOR = "https://www.widgety.co.uk/api/operators.json";
 const API_BASE_URL = "https://www.widgety.co.uk/api/cruises.json";
@@ -23,8 +24,9 @@ const Menu = () => {
   const [cat, setCategories] = useState([]);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
   const isMobile = useMediaQuery("(max-width:768px)");
-  
+
   const fetchOprator = async () => {
     try {
       const response = await fetch(
@@ -48,6 +50,11 @@ const Menu = () => {
   useEffect(() => {
     fetchOprator();
   }, []);
+
+  const debounceSearchAPI = debounce((search_text) => {
+    navigate(`/cruisecollection?search_text=${search_text}`);
+    setIsSearchActive(false)
+  }, 1000);
 
   const handleOpratorSelect = (opratorValue) => {
     setSelectedOprator(opratorValue);
@@ -105,6 +112,7 @@ const Menu = () => {
         setError(error);
       });
   };
+  
   useEffect(() => {
     fetchcateData();
   }, []);
@@ -256,6 +264,9 @@ const Menu = () => {
                   type="text"
                   className="search-input w-100 search-input-box"
                   placeholder="Search..."
+                  onChange={(e) => {
+                    debounceSearchAPI(e.target.value);
+                  }}
                 />
                 <span
                   className="position-absolute end-0 me-5 search-input-box-cross"
@@ -377,6 +388,9 @@ const Menu = () => {
                   type="text"
                   className="search-input w-100 search-input-box"
                   placeholder="Search..."
+                  onChange={(e) => {
+                    debounceSearchAPI(e.target.value);
+                  }}
                 />
                 <span
                   className="position-absolute end-0 me-5 search-input-box-cross"

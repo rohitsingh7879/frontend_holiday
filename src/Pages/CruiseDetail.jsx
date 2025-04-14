@@ -118,8 +118,13 @@ const CruiseDetails = () => {
   useEffect(() => {
     const fetchCruiseTypes = async () => {
       try {
+        const formattedShipName = (shipName || shipname)
+        ?.split("-")
+        .map((word) => word?.charAt(0)?.toUpperCase() + word?.slice(1))
+        .join(" ");
+
         const response = await fetch(
-          `${API_BASE_URL}?app_id=${APP_ID}&token=${TOKEN}`,
+          `${API_BASE_URL}?app_id=${APP_ID}&token=${TOKEN}&ship_name=${formattedShipName}`,
           { headers: { Accept: "application/json;api_version=2" } }
         );
 
@@ -152,7 +157,7 @@ const CruiseDetails = () => {
             travel_type: cruise.travel_type,
           }));
 
-          setCruiseItems((prevData) => [...prevData, ...cruisedata]);
+          setCruiseItems(cruisedata);
         } else {
           console.error("No cruise data available");
         }
@@ -182,7 +187,7 @@ const CruiseDetails = () => {
   };
 
   useEffect(() => {
-    // if (!shipname || cruiseItems?.length === 0) return;
+    // if (!shipname || !shipName || cruiseItems?.length === 0) return;
 
     const fetchShipDetails = async () => {
       try {
@@ -218,7 +223,7 @@ const CruiseDetails = () => {
     };
 
     fetchShipDetails();
-  }, [shipname, cruiseItems]);
+  }, [shipname,shipName]);
 
   //PORT  ALL GET
   useEffect(() => {

@@ -21,6 +21,8 @@ import { debounce } from "lodash";
 const CruiseCollection = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
+  
+  const search_text = queryParams.get("search_text");
   const categories = queryParams.get("categories");
   //console.log("Footer yr", year);
 
@@ -268,6 +270,9 @@ const CruiseCollection = () => {
 
       if (priceQuery) {
         queryParams.append("price_range", priceQuery);
+      }
+      if (search_text) {
+        queryParams.append("search_text", search_text);
       }
       // console.log("---stungnff--",queryParams.toString());
       const response = await axios.get(
