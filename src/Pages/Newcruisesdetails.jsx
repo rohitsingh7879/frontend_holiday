@@ -27,6 +27,7 @@ import lg4 from "../assets/images/icons/icon5.png";
 import SimilarCruises from "./SimilarCruises";
 import axios from "axios";
 import endpoints from "../utils/endpoints";
+import LocalMapContainer from "../Component/LocalMapContainer";
 const ALL_POST_API = "https://www.widgety.co.uk/api/ports.json";
 const APP_ID = "9f8ae7c620357e30f59d1cf1e167ddb4f5b6f1ce";
 const TOKEN =
@@ -1040,7 +1041,8 @@ const Newcruisesdetails = () => {
                       aria-labelledby="nav-bigship-tab"
                     >
                       <div className="tab_info" />
-                      <iframe
+                      <LocalMapContainer portDetail={cruiseDetail?.itinerary}/>
+                      {/* <iframe
                         src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d112097.08186541617!2d77.24885328261715!3d28.59876255819789!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sgoogle%20map!5e0!3m2!1sen!2sin!4v1741772650189!5m2!1sen!2sin"
                         width="100%"
                         height="450"
@@ -1049,7 +1051,7 @@ const Newcruisesdetails = () => {
                         loading="lazy"
                         referrerPolicy="no-referrer-when-downgrade"
                         title="Google Map"
-                      ></iframe>
+                      ></iframe> */}
                     </div>
                   </div>
                 </section>

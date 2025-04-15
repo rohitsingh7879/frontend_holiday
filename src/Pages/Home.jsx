@@ -3,6 +3,7 @@ import "../assets/css/home.css";
 import Cruisesection from "../Component/Cruisesection";
 import endpoints from "../utils/endpoints";
 import Cruisesearch from "../Component/Cruisesearch";
+import MapView from "../Component/MapContainer";
 
 const Home = () => {
   const [cruiseDetail, setCruiseDetail] = useState([]);
