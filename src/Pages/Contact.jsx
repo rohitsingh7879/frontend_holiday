@@ -12,6 +12,7 @@ import DOMPurify from "dompurify";
 import endpoints from "../utils/endpoints";
 import '../App.css'
 import '../assets/css/inner.css'
+import SubscribeWithEmail from "../Component/SubscribeWithEmail";
 
 const API_URL = import.meta.env.VITE_API_URL;
 const Contact = () => {
@@ -326,25 +327,8 @@ const Contact = () => {
           </div>
         </div>
         <Cosec />
-        <section className="new_subscribe">
-          <div className="container">
-            <h3>Subscribe to the Newsletter</h3>
-            <p>Subscribe to our Newsletter for the latest offers and deals!</p>
-            <div className="subm">
-              <input
-                type="text"
-                name="search"
-                placeholder="Your email address"
-              />
-              <input
-                type="submit"
-                defaultValue="Subscribe"
-                className="search_btn2"
-              />
-            </div>
-          </div>
-        </section>
-        <Customersay />
+       <SubscribeWithEmail/>
+      <Customersay />
       </section>
     </>
   );

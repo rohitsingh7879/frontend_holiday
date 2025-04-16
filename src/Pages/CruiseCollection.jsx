@@ -17,11 +17,12 @@ import generateCruiseDetailsUrl from "../utils/DetailsURL";
 import "../assets/css/inner.css";
 import "../App.css";
 import { debounce } from "lodash";
+import SubscribeWithEmail from "../Component/SubscribeWithEmail";
 
 const CruiseCollection = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  
+
   const search_text = queryParams.get("search_text");
   const categories = queryParams.get("categories");
   //console.log("Footer yr", year);
@@ -1109,20 +1110,7 @@ const CruiseCollection = () => {
           </a>
         </div>
       </section>
-      <section className="new_subscribe">
-        <div className="container">
-          <h3>Subscribe to the Newsletter</h3>
-          <p>Subscribe to our Newsletter for the latest offers and deals!</p>
-          <div className="subm">
-            <input type="text" name="search" placeholder="Your email address" />
-            <input
-              type="submit"
-              defaultValue="Subscribe"
-              className="search_btn2"
-            />
-          </div>
-        </div>
-      </section>
+      <SubscribeWithEmail />
       <Customersay />
     </>
   );

@@ -241,7 +241,8 @@ const Exploreluxury = () => {
     <>
       <section className="explore_tabs">
         <div className="container">
-          <h2>Explore our Luxury Cruise Lines</h2>
+        <h2>Luxury Cruise Categories</h2>
+
 
           {cruiseDataFromDB?.length > 0 && cruiseTypes?.length > 0 ? (
             <>

@@ -10,6 +10,7 @@ import '../assets/css/inner.css'
 
 import Customersay from "../Component/Customersay";
 import endpoints from "../utils/endpoints";
+import SubscribeWithEmail from "../Component/SubscribeWithEmail";
 const Faq = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -181,20 +182,7 @@ const Faq = () => {
           </div>
         </div>
       </section>
-      <section className="new_subscribe">
-        <div className="container">
-          <h3>Subscribe to the Newsletter</h3>
-          <p>Subscribe to our Newsletter for the latest offers and deals!</p>
-          <div className="subm">
-            <input type="text" name="search" placeholder="Your email address" />
-            <input
-              type="submit"
-              defaultValue="Subscribe"
-              className="search_btn2"
-            />
-          </div>
-        </div>
-      </section>
+    <SubscribeWithEmail/>
       <Customersay />
     </>
   );
