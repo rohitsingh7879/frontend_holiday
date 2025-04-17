@@ -1110,7 +1110,7 @@ const CruiseCollection = () => {
           </a>
         </div>
       </section>
-      <SubscribeWithEmail />
+      {/* <SubscribeWithEmail /> */}
       <Customersay />
     </>
   );
