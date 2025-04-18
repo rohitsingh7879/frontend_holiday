@@ -38,12 +38,14 @@ const Cruiseinspren = () => {
 
   const filters =
     loading || !category.length
-      ? [] 
-      : category.map((cat) => ({
-          value: cat?.categoryName,
-          label: cat?.categoryName,
-          image: cat?.categoryImage,
-        }));
+      ? []
+      : category
+          .filter((item) => item?.status && item?.isShowOnHomePage)
+          .map((cat) => ({
+            value: cat?.categoryName,
+            label: cat?.categoryName,
+            image: cat?.categoryImage,
+          }));
   return (
     <>
       <section className="cruise_inspiration">
@@ -64,117 +66,133 @@ const Cruiseinspren = () => {
               <>
                 <div className="col-lg-3">
                   <div className="row">
-                    <div className="col-lg-12">
-                      <div className="cruise_list">
-                        <Link
-                          to={`/cruisecollection?categories=${filters?.[0]?.value}`}
-                        >
-                          <img
-                            src={filters?.[0]?.image}
-                            className="img-fluid"
-                            alt="2025 Cruises"
-                          />
-                          <div className="cruises_name">
-                            {filters?.[0]?.value}
-                          </div>
-                        </Link>
+                    {filters?.[0] && (
+                      <div className="col-lg-12">
+                        <div className="cruise_list">
+                          <Link
+                            to={`/cruisecollection?categories=${filters?.[0]?.value}`}
+                          >
+                            <img
+                              src={filters?.[0]?.image}
+                              className="img-fluid"
+                              alt="2025 Cruises"
+                            />
+                            <div className="cruises_name">
+                              {filters?.[0]?.value?.split("-")?.join(" ")}
+                            </div>
+                          </Link>
+                        </div>
                       </div>
-                    </div>
-
-                    <div className="col-lg-12">
-                      <div className="cruise_list">
-                        <Link
-                          to={`/cruisecollection?categories=${filters?.[1]?.value}`}
-                        >
-                          <img
-                            src={filters?.[1]?.image}
-                            className="img-fluid"
-                            alt="2026 Luxury Cruises"
-                          />
-                          <div className="cruises_name">
-                            {filters?.[1]?.value} Luxury <span>Cruises</span>
-                          </div>
-                        </Link>
+                    )}
+                    {filters?.[1] && (
+                      <div className="col-lg-12">
+                        <div className="cruise_list">
+                          <Link
+                            to={`/cruisecollection?categories=${filters?.[1]?.value}`}
+                          >
+                            <img
+                              src={filters?.[1]?.image}
+                              className="img-fluid"
+                              alt="2026 Luxury Cruises"
+                            />
+                            <div className="cruises_name">
+                              {filters?.[1]?.value?.split("-")?.join(" ")}{" "}
+                              Luxury <span>Cruises</span>
+                            </div>
+                          </Link>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
-                <div className="col-lg-4">
-                  <div className="row">
-                    <div className="col-lg-12">
-                      <div className="cruise_list2">
-                        <Link
-                          to={`/cruisecollection?categories=${filters?.[2]?.value}`}
-                        >
-                          <img
-                            src={filters?.[2]?.image}
-                            className="img-fluid"
-                            alt="Beach Cruises"
-                          />
-                          <div className="cruises_name">
-                            {filters?.[2]?.value}
-                            <span>Cruises</span>
-                          </div>
-                        </Link>
+                {filters?.[2] && (
+                  <div className="col-lg-4">
+                    <div className="row">
+                      <div className="col-lg-12">
+                        <div className="cruise_list2">
+                          <Link
+                            to={`/cruisecollection?categories=${filters?.[2]?.value}`}
+                          >
+                            <img
+                              src={filters?.[2]?.image}
+                              className="img-fluid"
+                              alt="Beach Cruises"
+                            />
+                            <div className="cruises_name">
+                              {filters?.[2]?.value?.split("-")?.join(" ")}
+                              <span>Cruises</span>
+                            </div>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 <div className="col-lg-5">
                   <div className="row">
-                    <div className="col-lg-12">
-                      <div className="cruise_list">
-                        <Link
-                          to={`/cruisecollection?categories=${filters?.[3]?.value}`}
-                        >
-                          <img
-                            src={filters?.[3]?.image}
-                            className="img-fluid"
-                            alt="Caribbean Cruises"
-                          />
-                          <div className="cruises_name">
-                            {filters?.[3]?.value} <span>Cruises</span>
-                          </div>
-                        </Link>
+                    {filters?.[3] && (
+                      <div className="col-lg-12">
+                        <div className="cruise_list">
+                          <Link
+                            to={`/cruisecollection?categories=${filters?.[3]?.value}`}
+                          >
+                            <img
+                              src={filters?.[3]?.image}
+                              className="img-fluid"
+                              alt="Caribbean Cruises"
+                            />
+                            <div className="cruises_name">
+                              {filters?.[3]?.value?.split("-")?.join(" ")}{" "}
+                              <span>Cruises</span>
+                            </div>
+                          </Link>
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div className="col-lg-12">
                       <div className="row">
-                        <div className="col-lg-5">
-                          <div className="cruise_list">
-                            <Link
-                              to={`/cruisecollection?categories=${filters?.[4]?.value}`}
-                            >
-                              <img
-                                src={filters?.[4]?.image}
-                                className="img-fluid"
-                                alt="Luxury European Cruises"
-                              />
-                              <div className="cruises_name">
-                                {filters?.[4]?.value} <span>Cruises</span>
-                              </div>
-                            </Link>
+                        {filters?.[4] && (
+                          <div className="col-lg-5">
+                            <div className="cruise_list">
+                              <Link
+                                to={`/cruisecollection?categories=${filters?.[4]?.value}`}
+                              >
+                                <img
+                                  src={filters?.[4]?.image}
+                                  className="img-fluid"
+                                  alt="Luxury European Cruises"
+                                />
+                                <div className="cruises_name">
+                                  {filters?.[4]?.value?.split("-")?.join(" ")}{" "}
+                                  <span>Cruises</span>
+                                </div>
+                              </Link>
+                            </div>
                           </div>
-                        </div>
-                        <div className="col-lg-7">
-                          <div className="cruise_list">
-                            <Link
-                              to={`/cruisecollection?categories=${filters?.[5]?.value}`}
-                            >
-                              <img
-                                src={filters?.[5]?.image}
-                                className="img-fluid"
-                                alt="Luxury Baltic Cruises"
-                              />
-                              <div className="cruises_name">
-                                {filters?.[5]?.value} <span>Cruises</span>
-                              </div>
-                            </Link>
+                        )}
+
+                        {filters?.[5] && (
+                          <div className="col-lg-7">
+                            <div className="cruise_list">
+                              <Link
+                                to={`/cruisecollection?categories=${filters?.[5]?.value}`}
+                              >
+                                <img
+                                  src={filters?.[5]?.image}
+                                  className="img-fluid"
+                                  alt="Luxury Baltic Cruises"
+                                />
+                                <div className="cruises_name">
+                                  {filters?.[5]?.value?.split("-")?.join(" ")}{" "}
+                                  <span>Cruises</span>
+                                </div>
+                              </Link>
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   </div>

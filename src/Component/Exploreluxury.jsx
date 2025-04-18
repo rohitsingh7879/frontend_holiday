@@ -196,7 +196,7 @@ const Exploreluxury = () => {
   const fetchShipdataFromDB = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_URL + endpoints?.newpackage}`, {
+      const response = await fetch(`${API_URL + endpoints?.newpackage}?status=true`, {
         headers: {
           Accept: "application/json;api_version=2",
         },
@@ -220,7 +220,7 @@ const Exploreluxury = () => {
       if (shipDetail?.status === 200) {
         setLoading(false);
       }
-      // console.log(filterResult, shipDetail);
+      console.log(filterResult);
       if (filterResult?.length) {
         setCruiseDataFromDB([...filterResult]);
       }
@@ -280,7 +280,7 @@ const Exploreluxury = () => {
                   >
                     <Slider {...sliderSettings}>
                       {cruiseDataFromDB
-                        .filter((ship) => ship?.general_type === type?.value && ship?.statusPickCollection === true)
+                        .filter((ship) => ship?.general_type === type?.value)
                         .slice(0, 10)
                         .map((ship, index) => {
                           return (

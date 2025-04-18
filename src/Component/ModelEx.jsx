@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import endpoints from '../utils/endpoints';
 const ModelEx = ({ isOpen, onClose,shipDetails, shipRefData }) => {
 
-    if (!isOpen) return null; 
     const [value, setValue] = useState(1); 
     const [value1, setValue1] = useState(1); 
 
@@ -148,6 +147,7 @@ const ModelEx = ({ isOpen, onClose,shipDetails, shipRefData }) => {
             });
         }
     }, [alert]);  
+    if (!isOpen) return null; 
 
     return (
         <>

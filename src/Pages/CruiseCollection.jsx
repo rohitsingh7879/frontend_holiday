@@ -38,7 +38,10 @@ const CruiseCollection = () => {
   const [allOperatorDetails, setAllOperatorDetails] = useState([]);
   const [cruiseLines, setCruiseLines] = useState([]);
   const [port, setPort] = useState([]);
-  const [cruiseCategory, setCruiseCategory] = useState([]);
+  const [cruiseCategory, setCruiseCategory] = useState(
+    categories ? categories.split(",") : []
+  );
+
   const [selectedRegions, setSelectedRegions] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(10);
@@ -312,9 +315,10 @@ const CruiseCollection = () => {
       duration ||
       price
     ) {
-      console.log("first---");
+      // console.log("first---");
       if (currentPage === 1) {
         setData([]);
+        setTotalCount(0);
       }
     }
     setSpinner(true);
@@ -331,12 +335,23 @@ const CruiseCollection = () => {
   ]);
 
   useEffect(() => {
-    if (!categories) {
-      return;
+    if (categories) {
+      setCruiseCategory(categories.split(","));
+    } else {
+      setCruiseCategory([]);
     }
-
-    setCruiseCategory([categories]);
   }, [categories]);
+
+  // useEffect(() => {
+  //   console.log("first----lenght", categories?.length);
+  //   console.log("first----categories", categories);
+  //   if (!categories) {
+  //     setCruiseCategory([]);
+  //     return;
+  //   }
+
+  //   setCruiseCategory([categories]);
+  // }, [categories]);
   //console.log("CruiseCategory" , cruiseCategory)
   const handleReset = async (e) => {
     e.preventDefault();
@@ -716,7 +731,7 @@ const CruiseCollection = () => {
             <div className="col-lg-9">
               <div className="cruise_info">
                 <div className="cruise_result">
-                  Showing: {totalCount} Cruises
+                  Showing: {totalCount && !spinner ? totalCount : "0"} Cruises
                 </div>
                 <div className="cruise_drop">
                   {/* <select>
@@ -738,7 +753,7 @@ const CruiseCollection = () => {
                   />
                 </div>
               </div>
-              {data?.length > 0 ? (
+              {data?.length > 0 && !spinner ? (
                 data
                   ?.sort((a, b) => {
                     if (

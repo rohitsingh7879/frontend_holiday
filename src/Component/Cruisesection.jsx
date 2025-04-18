@@ -18,7 +18,7 @@ const CruiseSection = () => {
     try {
       setLoading(true); // Start loading
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL + endpoints?.newpackage}`
+        `${import.meta.env.VITE_API_URL + endpoints?.newpackage}?status=true`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -59,7 +59,7 @@ const CruiseSection = () => {
             {data && data?.length > 0 ? (
               <Slider {...settings} aria-label="Cruise Collection Slider">
                 {data
-                  ?.filter((item) => item.statusPickCollection)
+                  ?.filter((item) => item?.statusPickCollection)
                   .map((item, index) => (
                     <div className="coll_box" key={index}>
                       <img

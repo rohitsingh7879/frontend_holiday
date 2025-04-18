@@ -37,6 +37,7 @@ const Newcruisesdetails = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [allPortDetails, setAllPortsDetails] = useState([]);
   const [altdetails, setaltdetails] = useState([]);
+  const [altDataForModal, setAltDataForModal] = useState({});
   const fetchAllPorts = async () => {
     try {
       let resultAllPortData = await axios.get(
@@ -606,6 +607,7 @@ const Newcruisesdetails = () => {
                                       className="enquiry_btn "
                                       onClick={(e) => {
                                         e.preventDefault();
+                                        setAltDataForModal(altdate);
                                         openModal();
                                       }}
                                     >
@@ -1041,7 +1043,7 @@ const Newcruisesdetails = () => {
                       aria-labelledby="nav-bigship-tab"
                     >
                       <div className="tab_info" />
-                      <LocalMapContainer portDetail={cruiseDetail?.itinerary}/>
+                      <LocalMapContainer portDetail={cruiseDetail?.itinerary} />
                       {/* <iframe
                         src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d112097.08186541617!2d77.24885328261715!3d28.59876255819789!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1sgoogle%20map!5e0!3m2!1sen!2sin!4v1741772650189!5m2!1sen!2sin"
                         width="100%"
@@ -1330,6 +1332,7 @@ const Newcruisesdetails = () => {
                       className="enquiry_btn"
                       onClick={(e) => {
                         e.preventDefault();
+                        setAltDataForModal({});
                         openModal();
                       }}
                     >
@@ -1531,6 +1534,7 @@ const Newcruisesdetails = () => {
           isOpen={isModalOpen}
           onClose={closeModal}
           cruiseDetail={cruiseDetail}
+          altDataForModal={altDataForModal}
         />
       )}
     </>
