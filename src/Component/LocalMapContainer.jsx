@@ -6,8 +6,10 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 const LocalMapContainer = ({ portDetail }) => {
   const [hoverInfo, setHoverInfo] = useState(null);
   const mapRef = useRef(null);
-  console.log('portDetail---',portDetail)
-
+  const filterPortDetails = portDetail?.filter(
+    (port) => port?.longitude && port?.latitude
+  );
+  console.log("portDetail---", filterPortDetails);
   useEffect(() => {
     // Listen for tab show (Bootstrap tab shown.bs.tab event or generic visibility)
     const tabEl = document.querySelector("#nav-bigship");
@@ -50,8 +52,8 @@ const LocalMapContainer = ({ portDetail }) => {
       <Map
         ref={mapRef}
         initialViewState={{
-          longitude: portDetail?.[0]?.longitude || 0,
-          latitude: portDetail?.[0]?.latitude || 0,
+          longitude: filterPortDetails?.[0]?.longitude || 0,
+          latitude: filterPortDetails?.[0]?.latitude || 0,
           zoom: 4,
         }}
         style={{
@@ -61,9 +63,9 @@ const LocalMapContainer = ({ portDetail }) => {
         mapStyle="mapbox://styles/mapbox/streets-v11"
         mapboxAccessToken={MAPBOX_TOKEN}
       >
-        {portDetail?.map((ports, idx) => {
-          const { latitude=0, longitude=0, port } = ports || {};
-          if(latitude && longitude){
+        {filterPortDetails?.map((ports, idx) => {
+          const { latitude = 0, longitude = 0, port } = ports || {};
+          // if (latitude && longitude) {
             return (
               <Marker
                 key={idx}
@@ -75,13 +77,14 @@ const LocalMapContainer = ({ portDetail }) => {
                   src="https://cdn-icons-png.flaticon.com/512/684/684908.png"
                   alt="marker"
                   style={{ width: 30, height: 30, cursor: "pointer" }}
-                  onMouseEnter={() => setHoverInfo({ port, latitude, longitude })}
+                  onMouseEnter={() =>
+                    setHoverInfo({ port, latitude, longitude })
+                  }
                   onMouseLeave={() => setHoverInfo(null)}
                 />
               </Marker>
             );
-          }
-         
+          // }
         })}
 
         {hoverInfo && (

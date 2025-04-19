@@ -210,6 +210,10 @@ const Newcruisesdetails = () => {
   }, [cruiseDetail]);
   // Show only 3 data initially, Dininig show all after clicking Show More
   const [showdining, setDining] = useState(false);
+  const [showDeck, setShowdeck] = useState(false);
+
+  const { deckplans } = cruiseDetail;
+  const visibleDecks = showDeck ? deckplans : deckplans?.slice(0, 1);
 
   const visibleOptions = showdining
     ? cruiseDetail?.dining_options
@@ -801,7 +805,7 @@ const Newcruisesdetails = () => {
                             role="tabpanel"
                             aria-labelledby="pills-decks-tab"
                           >
-                            {cruiseDetail?.deckplans?.map((deck, index) => (
+                            {visibleDecks?.map((deck, index) => (
                               <div className="deck_info" key={index}>
                                 <p>{deck.name}</p>
 
@@ -841,6 +845,16 @@ const Newcruisesdetails = () => {
                                 </div>
                               </div>
                             ))}
+                            {deckplans?.length > 1 && (
+                              <div className="text-center mt-3">
+                                <button
+                                  className="round_btn"
+                                  onClick={() => setShowdeck(!showDeck)}
+                                >
+                                  {showDeck ? "Show Less" : "Show More"}
+                                </button>
+                              </div>
+                            )}
                           </div>
                           <div
                             className="tab-pane fade"

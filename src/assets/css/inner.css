@@ -162,8 +162,8 @@ section.cruise_dest { padding: 30px 0px 60px; }
 
 .cruise_result { font-family: 'sweetsans'; text-transform: uppercase; font-size: 14px; }
 .top_area_ship { font-family: 'Cardo'; font-size: 13px; } 
-.top_area_ship p { margin-bottom: 0px; font-weight: 700; }
-.ship_ssd { display: flex ; align-items: center; }
+.top_area_ship p { margin-bottom: 0px !important; font-weight: 700; }
+.ship_ssd { display: flex ; }
 .pright_zeo{padding:0px;}
 .ship_ssd img { margin-right: 5px; }
 
