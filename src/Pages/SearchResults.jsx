@@ -41,9 +41,9 @@ const SearchResults = () => {
         </div>
       </section>
 
-      <div class="container">
+      <div className="container">
 
-        <div class="row">
+        <div className="row">
 
         <div className="col-lg-3">
               {/* Filter section */}
@@ -136,7 +136,7 @@ const SearchResults = () => {
               </div>
             </div>
 
-        <div class="col-lg-9">
+        <div className="col-lg-9">
 
             
         {results.length > 0 ? (
@@ -200,10 +200,10 @@ const SearchResults = () => {
                     <div className="col-lg-7">
                       <div className="cck">
                       <ul>
-												<li><img src={moon3} class="img-fluid" /> {cruise.cruise_nights ? `${cruise.cruise_nights} nights` : '13 nights'} - {cruise.starts_on ? formatDate(cruise.starts_on) : '17 Sep 2025'}</li>
-												<li><img src={moon3} class="img-fluid" /> 16 nights - 28 Nov 2025</li>
-												<li><img src={moon3} class="img-fluid" /> 16 nights - 28 Nov 2025</li>
-												<li><img src={moon3} class="img-fluid" /> 16 nights - 28 Nov 2025</li>
+												<li><img src={moon3} className="img-fluid" /> {cruise.cruise_nights ? `${cruise.cruise_nights} nights` : '13 nights'} - {cruise.starts_on ? formatDate(cruise.starts_on) : '17 Sep 2025'}</li>
+												<li><img src={moon3} className="img-fluid" /> 16 nights - 28 Nov 2025</li>
+												<li><img src={moon3} className="img-fluid" /> 16 nights - 28 Nov 2025</li>
+												<li><img src={moon3} className="img-fluid" /> 16 nights - 28 Nov 2025</li>
 											</ul>
                       </div>
                     </div>

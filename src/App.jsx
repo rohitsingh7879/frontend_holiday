@@ -91,6 +91,8 @@ const PrivacyAndPolicy = lazy(() => import("./Pages/PrivacyAndPolicy"));
 const CareerOportunity = lazy(() => import("./Pages/CareerOportunity"));
 
 import "./App.css";
+import ErrorBoundary from "./Component/ErrorBoundary";
+import NotFound from "./Component/NotFound";
 
 function App() {
   return (
@@ -103,45 +105,57 @@ function App() {
             </div>
           }
         >
-          <Header />
-          <Routes>
-            {/* Home route */}
-            <Route path="/" element={<Home />} />
+          <ErrorBoundary>
+            <Header />
+            <Routes>
+              {/* Home route */}
+              <Route path="/" element={<Home />} />
+              <Route path="*" element={<NotFound />} />
 
-            {/* Dynamic CruiseDetail route */}
-            <Route path="/CruiseDetail/:shipname" element={<CruiseDetail />} />
-            <Route path="/cruise-details/:details" element={<CruiseDetail />} />
+              {/* Dynamic CruiseDetail route */}
+              <Route
+                path="/CruiseDetail/:shipname"
+                element={<CruiseDetail />}
+              />
+              <Route
+                path="/cruise-details/:details"
+                element={<CruiseDetail />}
+              />
 
-            <Route
-              path="/Newcruisesdetails/:_id"
-              element={<Newcruisesdetails />}
-            />
-            <Route
-              path="/new-cruise-details/:details"
-              element={<Newcruisesdetails />}
-            />
+              <Route
+                path="/Newcruisesdetails/:_id"
+                element={<Newcruisesdetails />}
+              />
+              <Route
+                path="/new-cruise-details/:details"
+                element={<Newcruisesdetails />}
+              />
 
-            {/* Cruisesearch route */}
-            <Route path="/Cruisesearch" element={<Cruisesearch />} />
-            <Route path="/Model" element={<Model />} />
+              {/* Cruisesearch route */}
+              <Route path="/Cruisesearch" element={<Cruisesearch />} />
+              <Route path="/Model" element={<Model />} />
 
-            {/* Search results route */}
-            <Route path="/search-results" element={<SearchResults />} />
-            <Route path="/cruise-deals" element={<CruiseDeals />} />
+              {/* Search results route */}
+              <Route path="/search-results" element={<SearchResults />} />
+              <Route path="/cruise-deals" element={<CruiseDeals />} />
 
-            {/* Regions route */}
-            <Route path="/regions" element={<Regions />} />
-            <Route path="/oprator" element={<Oprator />} />
-            <Route path="/aboutus" element={<AboutUs />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/newsletter" element={<Newsletter />} />
-            <Route path="/faq" element={<Faq />} />
-            <Route path="/cruisecollection" element={<CruiseCollection />} />
+              {/* Regions route */}
+              <Route path="/regions" element={<Regions />} />
+              <Route path="/oprator" element={<Oprator />} />
+              <Route path="/aboutus" element={<AboutUs />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/newsletter" element={<Newsletter />} />
+              <Route path="/faq" element={<Faq />} />
+              <Route path="/cruisecollection" element={<CruiseCollection />} />
 
-            <Route path="/privacy-and-policy" element={<PrivacyAndPolicy />} />
-            <Route path="/career-oportunity" element={<CareerOportunity />} />
-          </Routes>
-          <Footer />
+              <Route
+                path="/privacy-and-policy"
+                element={<PrivacyAndPolicy />}
+              />
+              <Route path="/career-oportunity" element={<CareerOportunity />} />
+            </Routes>
+            <Footer />
+          </ErrorBoundary>
         </Suspense>
       </BrowserRouter>
     </>

@@ -902,7 +902,13 @@ const Oprator = () => {
             </button>
           </div>
 
-          <div className="tab-content mt-4" id="nav-tabContent">
+          <div
+            className="tab-content"
+            id="nav-tabContent"
+            style={{
+              marginTop: "4rem",
+            }}
+          >
             <div
               className="tab-pane fade active show"
               id="nav-regent"
@@ -2777,7 +2783,7 @@ const Oprator = () => {
           </div>
         </div>
       </section>
-     
+
       <Customersay />
     </>
   );

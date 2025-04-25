@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import Slider from "react-slick";
 import Customersay from "../Component/Customersay";
 import banner from "../assets/images/banner1.jpg";
 import mountain from "../assets/images/mountain.jpg";
 import pe from "../assets/images/pople.jpg";
 import about_img from "../assets/images/about_img.png";
-import about_img1 from "../assets/images/about_g1.png";
-import about_img2 from "../assets/images/about_g2.png";
-import about_img3 from "../assets/images/about_g3.png";
 import about_img4 from "../assets/images/about_g4.png";
 import logo from "../assets/images/logo_big.png";
 import Swal from "sweetalert2";

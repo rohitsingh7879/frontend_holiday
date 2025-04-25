@@ -72,7 +72,11 @@ const Footer = () => {
           <div className="container">
             <div className="row">
               <div className="col-lg-10">
-                <img src={logo} className="img-fluid foot_logo" alt="Logo" />
+                <Link to={"/"}>
+                <img src={logo} className="img-fluid foot_logo" alt="Logo" style={{
+                  cursor:"pointer"
+                }}/>
+                </Link>
 
                 <div className="row">
                   <div className="col-lg-7">

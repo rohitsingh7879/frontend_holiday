@@ -99,7 +99,7 @@ section.why_inner { box-shadow: 0px 3px 3px 1px #ccc; padding: 5px 30px; border-
 
 .pre_person { border-radius: 25px; border: 1px solid var(--turquoise); padding:10px; text-align: center;}
 .pre_person a { color: #000; text-decoration: none; padding: 15px 0px; display: inline-block; width: 49%; cursor:pointer; font-size: 12px; font-family: sweetsans;}
-.solo_active{background: var(--turquoise); color:#fff!important; border-radius: 25px;}
+.solo_active{background: var(--turquoise) !important; color:#fff!important; border-radius: 25px;}
 
 .person2{display:none;}
 .cardo{font-family: 'Cardo'; font-size: 16px;}

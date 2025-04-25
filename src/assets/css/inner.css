@@ -53,7 +53,7 @@ section.why_inner { box-shadow: 0px 3px 3px 1px #ccc; padding: 5px 30px; border-
 
 .pre_person { border-radius: 25px; border: 1px solid var(--turquoise); padding:10px; text-align: center;}
 .pre_person a { color: #000; text-decoration: none; padding: 15px 0px; display: inline-block; width: 49%; cursor:pointer; font-size: 12px; font-family: sweetsans;}
-.solo_active{background: var(--turquoise); color:#fff!important; border-radius: 25px;}
+
 
 .person2{display:none;}
 .cardo{font-family: 'Cardo'; font-size: 16px;}
@@ -169,7 +169,7 @@ section.cruise_dest { padding: 30px 0px 60px; }
 
 img.sm_logo {object-fit: contain;}
 .criuse_list { margin-bottom: 50px; box-shadow: 2px 3px 3px 1px #cfcfcf; border-radius: 12px; }
-.cri_info { background: #fff; box-shadow: 1px 3px 7px 2px rgba(228, 230, 232, 1); padding: 26px; display: block; border-radius: 14px; margin-left: -40px; font-family: 'Cardo'; height: 330px; position: relative;}
+.cri_info { background: #fff; box-shadow: 1px 3px 7px 2px rgba(228, 230, 232, 1); padding: 26px; display: block; border-radius: 14px; margin-left: -40px; font-family: 'Cardo'; height: 360px; position: relative;}
 
 .dieds { border-bottom: 1px solid #e7e6e6; padding: 5px 0px; }
 .dieds span { font-size: 14px; } 
@@ -178,7 +178,7 @@ img.sm_logo {object-fit: contain;}
 .curise_des_area { font-size: 13px; padding: 10px 0px; border-bottom: 1px solid #e7e6e6; }
 .curise_des_area p{margin-bottom:0px;}
 .cri_pic{position:relative;}
-.cri_pic img { width: 100%; height: 330px; object-fit: cover; border-radius: 14px; object-position: center;}
+.cri_pic img { width: 100%; height: 360px; object-fit: cover; border-radius: 14px; object-position: center;}
 
 .wish_list { position: absolute; top: 10px; left: 10px; background: #fff; width: 30px; height: 30px; border-radius: 100px; text-align: center; line-height: 33px; color: #000; } 
 .wish_list a { color: #000; text-decoration: none; cursor:pointer;} 
@@ -381,3 +381,23 @@ select.select_area { width: 100%; height: 35px; border-radius: 4px; border: 1px 
 .container.hand_picked p { text-transform: uppercase; font-family: sweetsans; font-size: 14px; }
 .cck ul { padding: 0px; list-style: none; column-count: 2; font-size: 12px; margin-bottom: 0px; }
 .cck ul li { margin-bottom: 5px; }
+
+
+.dieds.line_h15 {
+  line-height: 10px;
+  
+}
+.listttt{display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;}
+
+  ul.listttt {
+    list-style: none;
+    padding: 0px;
+    line-height: 20px;
+    margin-bottom: 0px;
+}
+ul.listttt li {
+  display: inline;
+}

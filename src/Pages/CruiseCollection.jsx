@@ -18,6 +18,7 @@ import "../assets/css/inner.css";
 import "../App.css";
 import { debounce } from "lodash";
 import SubscribeWithEmail from "../Component/SubscribeWithEmail";
+import SearchNotFound from "../Component/SearchNotFound";
 
 const CruiseCollection = () => {
   const location = useLocation();
@@ -26,7 +27,6 @@ const CruiseCollection = () => {
   const search_text = queryParams.get("search_text");
   const categories = queryParams.get("categories");
   //console.log("Footer yr", year);
-
   const [category, setCategories] = useState([]);
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
@@ -275,8 +275,9 @@ const CruiseCollection = () => {
       if (priceQuery) {
         queryParams.append("price_range", priceQuery);
       }
+
       if (search_text) {
-        queryParams.append("search_text", search_text);
+        queryParams.append("search_text", search_text );
       }
       // console.log("---stungnff--",queryParams.toString());
       const response = await axios.get(
@@ -332,6 +333,7 @@ const CruiseCollection = () => {
     selectedShips,
     selectedPort,
     currentPage,
+    search_text,
   ]);
 
   useEffect(() => {
@@ -435,98 +437,105 @@ const CruiseCollection = () => {
 
   return (
     <>
-      <section className="banner banner_c">
-        <div
-          id="demo"
-          className="carousel slide carousel-fade"
-          data-bs-ride="carousel"
-        >
-          <div className="carousel-indicators">
-            <button
-              type="button"
-              data-bs-target="#demo"
-              data-bs-slide-to={0}
-              className="active"
-            />
-          </div>
+      {data?.length > 0 && !spinner ? (
+        <>
+          <section className="banner banner_c">
+            <div
+              id="demo"
+              className="carousel slide carousel-fade"
+              data-bs-ride="carousel"
+            >
+              <div className="carousel-indicators">
+                <button
+                  type="button"
+                  data-bs-target="#demo"
+                  data-bs-slide-to={0}
+                  className="active"
+                />
+              </div>
 
-          <div className="carousel-inner">
-            <div className="carousel-item active">
-              <img
-                src={banner}
-                alt="Collection"
-                className="d-block"
-                style={{ width: "100%" }}
-              />
-              <div className="bg-overlay22" />
-              <div className="carousel-caption">
-                <p>
-                  <img src={bannerlogo} className="img-fluid logo_d" />
-                </p>
-                <h3>Hand Picked Cruise Collection</h3>
-                <p className="bodk">
-                  <span>
-                    Discover an exquisite collection of bespoke cruise packages
-                  </span>
-                </p>
-                <small>
-                  Showcasing all-inclusive indulgence and exclusive privileges,
-                  curated by our product
-                  <br /> team with over 50 years of combined expertise in luxury
-                  cruise travel.
-                </small>
+              <div className="carousel-inner">
+                <div className="carousel-item active">
+                  <img
+                    src={banner}
+                    alt="Collection"
+                    className="d-block"
+                    style={{ width: "100%" }}
+                  />
+                  <div className="bg-overlay22" />
+                  <div className="carousel-caption">
+                    <p>
+                      <img src={bannerlogo} className="img-fluid logo_d" />
+                    </p>
+                    <h3>Hand Picked Cruise Collection</h3>
+                    <p className="bodk">
+                      <span>
+                        Discover an exquisite collection of bespoke cruise
+                        packages
+                      </span>
+                    </p>
+                    <small>
+                      Showcasing all-inclusive indulgence and exclusive
+                      privileges, curated by our product
+                      <br /> team with over 50 years of combined expertise in
+                      luxury cruise travel.
+                    </small>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      <Cruisesearch />
+          <Cruisesearch />
 
-      <section className="cruise_dest">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-3">
-              <form className="scroll_form" id="style-1">
-                <div className="ship_left_area">
-                  <div className="button1">
-                    <h4>
-                      CRUISE CATEGORY <i className="ri-arrow-down-s-line" />
-                    </h4>
-                    <div className="mydiv">
-                      <ul>
-                        {filters.slice(0, visibleCount).map((filter, index) => (
-                          <li key={index}>
-                            <input
-                              type="checkbox"
-                              checked={cruiseCategory.includes(filter.value)}
-                              onChange={() => {
-                                handleCheckboxChange(filter.value);
-                                setCurrentPage(1);
-                              }}
-                            />{" "}
-                            {filter.label}
-                          </li>
-                        ))}
-                      </ul>
+          <section className="cruise_dest">
+            <div className="container">
+              <div className="row">
+                <div className="col-lg-3">
+                  <form className="scroll_form" id="style-1">
+                    <div className="ship_left_area">
+                      <div className="button1">
+                        <h4>
+                          CRUISE CATEGORY <i className="ri-arrow-down-s-line" />
+                        </h4>
+                        <div className="mydiv">
+                          <ul>
+                            {filters
+                              .slice(0, visibleCount)
+                              .map((filter, index) => (
+                                <li key={index}>
+                                  <input
+                                    type="checkbox"
+                                    checked={cruiseCategory.includes(
+                                      filter.value
+                                    )}
+                                    onChange={() => {
+                                      handleCheckboxChange(filter.value);
+                                      setCurrentPage(1);
+                                    }}
+                                  />{" "}
+                                  {filter.label}
+                                </li>
+                              ))}
+                          </ul>
 
-                      {filters.length > 5 && (
-                        <button
-                          className="action_btn_cat"
-                          onClick={handleSeeMore}
-                        >
-                          {visibleCount === 5 ? "See More" : "See Less"}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  <div className="button1">
-                    <h4>
-                      DEPARTURE START DATE{" "}
-                      {/* <i className="ri-arrow-down-s-line" /> */}
-                    </h4>
-                    <div className="mydiv">
-                      {/* <Select
+                          {filters.length > 5 && (
+                            <button
+                              className="action_btn_cat"
+                              onClick={handleSeeMore}
+                            >
+                              {visibleCount === 5 ? "See More" : "See Less"}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      <div className="button1">
+                        <h4>
+                          DEPARTURE START DATE{" "}
+                          {/* <i className="ri-arrow-down-s-line" /> */}
+                        </h4>
+                        <div className="mydiv">
+                          {/* <Select
                                   options={cruiseDate}
                                   value={selectedCruiseStartDate}
                                   onChange={setSelectedCruiseStartDate}
@@ -534,599 +543,1387 @@ const CruiseCollection = () => {
                                   className="select_area"
                                   classNamePrefix="select_area"
                                 /> */}
-                      <input
-                        type="date"
-                        className="form-control"
-                        onChange={(e) => {
-                          setCurrentPage(1);
-                          setSelectedCruiseStartDate(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="button1">
-                    <h4>
-                      DEPARTURE END DATE
-                      {/* <i className="ri-arrow-down-s-line" /> */}
-                    </h4>
-                    <div className="mydiv">
-                      <input
-                        type="date"
-                        className="form-control"
-                        min={selectedCruiseStartDate}
-                        disabled={!selectedCruiseStartDate}
-                        onChange={(e) => {
-                          setCurrentPage(1);
-                          setSelectedCruiseEndDate(e.target.value);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="button1">
-                    <h4>
-                      Destination <i className="ri-arrow-down-s-line" />
-                    </h4>
-                    <div className="mydiv">
-                      <Select
-                        options={regions}
-                        value={selectedRegions}
-                        onChange={(selected) => {
-                          setSelectedRegions(selected);
-                          setCurrentPage(1);
-                        }}
-                        placeholder="Select Destination"
-                        className="select_area "
-                        classNamePrefix="select_area"
-                      />
-                    </div>
-                  </div>
-                  <div className="button1">
-                    <h4>
-                      Cruise Line <i className="ri-arrow-down-s-line" />
-                    </h4>
-                    <div className="mydiv">
-                      <Select
-                        options={cruiseLines}
-                        value={selectedCruiseLine}
-                        onChange={(selected) => {
-                          setSelectedCruiseLine(selected);
-                          setCurrentPage(1);
-                        }}
-                        placeholder="Select Cruise Line"
-                      />
-                    </div>
-                  </div>
-                  <div className="button1">
-                    <h4>
-                      CRUISE SHIP <i className="ri-arrow-down-s-line" />
-                    </h4>
-                    <div className="mydiv">
-                      <Select
-                        options={ships}
-                        value={selectedShips}
-                        onChange={(selected) => {
-                          setSelectedShips(selected);
-                          setCurrentPage(1);
-                        }}
-                        placeholder="Select Ship"
-                      />
-                    </div>
-                  </div>
-                  <div className="button1 border_none">
-                    <h4>
-                      ports <i className="ri-arrow-down-s-line" />
-                    </h4>
-                    <div className="mydiv">
-                      <Select
-                        options={port}
-                        value={selectedPort}
-                        onChange={(selected) => {
-                          setSelectedPort(selected);
-                          setCurrentPage(1);
-                        }}
-                        placeholder="Select Port"
-                      />
-                    </div>
-                  </div>
-                  <div className="filter level-filter level-req">
-                    <div id="rangeSlider" className="range-slider">
-                      <label>Duration:</label>
-                      <div className="number-group">
-                        <input
-                          className="number-input"
-                          type="number"
-                          defaultValue={10}
-                          min={0}
-                          max={50}
-                          value={duration}
-                          onChange={handleDurationChange}
-                        />{" "}
-                        -
-                        <input
-                          className="number-input"
-                          type="number"
-                          defaultValue={50}
-                          min={0}
-                          max={50}
-                          disabled
-                        />{" "}
-                        Nights
+                          <input
+                            type="date"
+                            className="form-control"
+                            value={selectedCruiseStartDate}
+                            onChange={(e) => {
+                              setCurrentPage(1);
+                              setSelectedCruiseStartDate(e.target.value);
+                            }}
+                          />
+                        </div>
                       </div>
-                      <div className="range-group">
-                        <input
-                          id="range-input"
-                          value={duration}
-                          onChange={handleDurationChange}
-                          className="range-input"
-                          defaultValue={10}
-                          min={1}
-                          max={50}
-                          step={1}
-                          type="range"
-                        />
+                      <div className="button1">
+                        <h4>
+                          DEPARTURE END DATE
+                          {/* <i className="ri-arrow-down-s-line" /> */}
+                        </h4>
+                        <div className="mydiv">
+                          <input
+                            type="date"
+                            className="form-control"
+                            value={selectedCruiseEndDate}
+                            min={selectedCruiseStartDate}
+                            disabled={!selectedCruiseStartDate}
+                            onChange={(e) => {
+                              setCurrentPage(1);
+                              setSelectedCruiseEndDate(e.target.value);
+                            }}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div className="filter level-filter level-req">
-                    <div id="rangeSlider1" className="range-slider">
-                      <label>Price Range:</label>
-                      <div className="number-group">
-                        <input
-                          className="number-input"
-                          type="number"
-                          defaultValue={10}
-                          min={0}
-                          max={50}
-                          value={price}
-                          onChange={handlePriceChange}
-                        />{" "}
-                        -
-                        <input
-                          className="number-input"
-                          type="number"
-                          defaultValue={50}
-                          min={0}
-                          max={50}
-                          disabled
-                        />
+                      <div className="button1">
+                        <h4>
+                          Destination <i className="ri-arrow-down-s-line" />
+                        </h4>
+                        <div className="mydiv">
+                          <Select
+                            options={regions}
+                            value={selectedRegions}
+                            onChange={(selected) => {
+                              setSelectedRegions(selected);
+                              setCurrentPage(1);
+                            }}
+                            placeholder="Select Destination"
+                            className="select_area "
+                            classNamePrefix="select_area"
+                          />
+                        </div>
                       </div>
-                      <div className="range-group">
-                        <input
-                          id="range-input"
-                          value={price}
-                          onChange={handlePriceChange}
-                          className="range-input"
-                          defaultValue={10}
-                          min={1}
-                          max={50}
-                          step={1}
-                          type="range"
-                        />
+                      <div className="button1">
+                        <h4>
+                          Cruise Line <i className="ri-arrow-down-s-line" />
+                        </h4>
+                        <div className="mydiv">
+                          <Select
+                            options={cruiseLines}
+                            value={selectedCruiseLine}
+                            onChange={(selected) => {
+                              setSelectedCruiseLine(selected);
+                              setCurrentPage(1);
+                            }}
+                            placeholder="Select Cruise Line"
+                          />
+                        </div>
                       </div>
+                      <div className="button1">
+                        <h4>
+                          CRUISE SHIP <i className="ri-arrow-down-s-line" />
+                        </h4>
+                        <div className="mydiv">
+                          <Select
+                            options={ships}
+                            value={selectedShips}
+                            onChange={(selected) => {
+                              setSelectedShips(selected);
+                              setCurrentPage(1);
+                            }}
+                            placeholder="Select Ship"
+                          />
+                        </div>
+                      </div>
+                      <div className="button1 border_none">
+                        <h4>
+                          ports <i className="ri-arrow-down-s-line" />
+                        </h4>
+                        <div className="mydiv">
+                          <Select
+                            options={port}
+                            value={selectedPort}
+                            onChange={(selected) => {
+                              setSelectedPort(selected);
+                              setCurrentPage(1);
+                            }}
+                            placeholder="Select Port"
+                          />
+                        </div>
+                      </div>
+                      <div className="filter level-filter level-req">
+                        <div id="rangeSlider" className="range-slider">
+                          <label>Duration:</label>
+                          <div className="number-group">
+                            <input
+                              className="number-input"
+                              type="number"
+                              defaultValue={10}
+                              min={0}
+                              max={50}
+                              value={duration}
+                              onChange={handleDurationChange}
+                            />{" "}
+                            -
+                            <input
+                              className="number-input"
+                              type="number"
+                              defaultValue={50}
+                              min={0}
+                              max={50}
+                              disabled
+                            />{" "}
+                            Nights
+                          </div>
+                          <div className="range-group">
+                            <input
+                              id="range-input"
+                              value={duration}
+                              onChange={handleDurationChange}
+                              className="range-input"
+                              defaultValue={10}
+                              min={1}
+                              max={50}
+                              step={1}
+                              type="range"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      <div className="filter level-filter level-req">
+                        <div id="rangeSlider1" className="range-slider">
+                          <label>Price Range:</label>
+                          <div className="number-group">
+                            <input
+                              className="number-input"
+                              type="number"
+                              defaultValue={10}
+                              min={0}
+                              max={50}
+                              value={price}
+                              onChange={handlePriceChange}
+                            />{" "}
+                            -
+                            <input
+                              className="number-input"
+                              type="number"
+                              defaultValue={50}
+                              min={0}
+                              max={50}
+                              disabled
+                            />
+                          </div>
+                          <div className="range-group">
+                            <input
+                              id="range-input"
+                              value={price}
+                              onChange={handlePriceChange}
+                              className="range-input"
+                              defaultValue={10}
+                              min={1}
+                              max={50}
+                              step={1}
+                              type="range"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                      {selectedCruiseStartDate ||
+                      cruiseCategory?.length ||
+                      selectedCruiseEndDate ||
+                      selectedCruiseLine?.value ||
+                      selectedRegions?.value ||
+                      selectedShips?.value ||
+                      selectedPort?.value ||
+                      duration ||
+                      price ? (
+                        <div className="text-end">
+                          <a
+                            href="#"
+                            className="action_btn"
+                            onClick={(e) => handleReset(e)}
+                          >
+                            Reset
+                          </a>
+                        </div>
+                      ) : (
+                        <></>
+                      )}
                     </div>
-                  </div>
-                  {selectedCruiseStartDate ||
-                  cruiseCategory?.length ||
-                  selectedCruiseEndDate ||
-                  selectedCruiseLine?.value ||
-                  selectedShips?.value ||
-                  selectedPort?.value ||
-                  duration ||
-                  price ? (
-                    <div className="text-end">
-                      <a
-                        href="#"
-                        className="action_btn"
-                        onClick={(e) => handleReset(e)}
-                      >
-                        Reset
-                      </a>
-                    </div>
-                  ) : (
-                    <></>
-                  )}
+                  </form>
                 </div>
-              </form>
-            </div>
-            <div className="col-lg-9">
-              <div className="cruise_info">
-                <div className="cruise_result">
-                  Showing: {totalCount && !spinner ? totalCount : "0"} Cruises
-                </div>
-                <div className="cruise_drop">
-                  {/* <select>
+                <div className="col-lg-9">
+                  <div className="cruise_info">
+                    <div className="cruise_result">
+                      Showing: {totalCount && !spinner ? totalCount : "0"}{" "}
+                      Cruises
+                    </div>
+                    <div className="cruise_drop">
+                      {/* <select>
                     <option>Recommended</option>
                     <option>Price (Low to High)</option>
                     <option>Price (High to Low)</option>
                     <option>Departure Date (Soonest First)</option>
                     <option>Departure Date (Furthest First)</option>
                   </select> */}
-                  <Select
-                    value={selectedSortingOption}
-                    onChange={(selected) => {
-                      // setCurrentPage(1);
-                      setSelectedSortingOption(selected);
-                    }}
-                    options={sortingOptions}
-                    placeholder="Recommended"
-                    className="select_rec"
-                  />
-                </div>
-              </div>
-              {data?.length > 0 && !spinner ? (
-                data
-                  ?.sort((a, b) => {
-                    if (
-                      selectedSortingOption?.value === "high_to_low" ||
-                      selectedSortingOption?.value === "low_to_high"
-                    ) {
-                      return selectedSortingOption?.value === "high_to_low"
-                        ? b?.priceStartFrom - a?.priceStartFrom
-                        : a?.priceStartFrom - b?.priceStartFrom;
-                    } else if (
-                      selectedSortingOption?.value === "departure_soonest" ||
-                      selectedSortingOption?.value === "departure_furthest"
-                    ) {
-                      return selectedSortingOption?.value ===
-                        "departure_soonest"
-                        ? new Date(a?.itinerary?.[0]?.check_in_date * 1000) -
-                            new Date(b?.itinerary?.[0]?.check_in_date * 1000)
-                        : new Date(b?.itinerary?.[0]?.check_in_date * 1000) -
-                            new Date(a?.itinerary?.[0]?.check_in_date * 1000);
-                    }
+                      <Select
+                        value={selectedSortingOption}
+                        onChange={(selected) => {
+                          // setCurrentPage(1);
+                          setSelectedSortingOption(selected);
+                        }}
+                        options={sortingOptions}
+                        placeholder="Recommended"
+                        className="select_rec"
+                      />
+                    </div>
+                  </div>
+                  {data?.length > 0 && !spinner ? (
+                    data
+                      ?.sort((a, b) => {
+                        if (
+                          selectedSortingOption?.value === "high_to_low" ||
+                          selectedSortingOption?.value === "low_to_high"
+                        ) {
+                          return selectedSortingOption?.value === "high_to_low"
+                            ? b?.priceStartFrom - a?.priceStartFrom
+                            : a?.priceStartFrom - b?.priceStartFrom;
+                        } else if (
+                          selectedSortingOption?.value ===
+                            "departure_soonest" ||
+                          selectedSortingOption?.value === "departure_furthest"
+                        ) {
+                          return selectedSortingOption?.value ===
+                            "departure_soonest"
+                            ? new Date(
+                                a?.itinerary?.[0]?.check_in_date * 1000
+                              ) -
+                                new Date(
+                                  b?.itinerary?.[0]?.check_in_date * 1000
+                                )
+                            : new Date(
+                                b?.itinerary?.[0]?.check_in_date * 1000
+                              ) -
+                                new Date(
+                                  a?.itinerary?.[0]?.check_in_date * 1000
+                                );
+                        }
 
-                    return 0;
-                  })
-                  .map((item, index) => (
-                    <div className="criuse_list" key={index}>
-                      <div className="row" key={index}>
-                        <div className="col-lg-4">
-                          <div className="cri_pic">
-                            {/* Dynamic Ship Image */}
-                            <img
-                              src={item?.cruise_image}
-                              className="img-fluid"
-                              alt="Ship"
-                            />
+                        return 0;
+                      })
+                      .map((item, index) => (
+                        <div className="criuse_list" key={index}>
+                          <div className="row" key={index}>
+                            <div className="col-lg-4">
+                              <div className="cri_pic">
+                                {/* Dynamic Ship Image */}
+                                <img
+                                  src={item?.cruise_image}
+                                  className="img-fluid"
+                                  alt="Ship"
+                                />
 
-                            <div className="wish_list">
-                              <a>
-                                <i className="ri-heart-3-line" />
-                              </a>
+                                <div className="wish_list">
+                                  <a>
+                                    <i className="ri-heart-3-line" />
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="col-lg-8 p-0">
+                              <div className="cri_info">
+                                <div className="top_area_ship">
+                                  <div className="row">
+                                    <div className="col-lg-3 pright_zeo">
+                                      <div className="ship_ssd m20">
+                                        <div>
+                                          <img
+                                            src={iconship}
+                                            className="img-fluid"
+                                            alt="Ship Icon"
+                                          />
+                                        </div>
+                                        <div>
+                                          <p>Ship</p>
+                                          <span>
+                                            {" "}
+                                            {item?.ship ? item?.ship : "N/A"}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-3 col-4 pright_zeo">
+                                      <div className="ship_ssd">
+                                        <div>
+                                          <img
+                                            src={date}
+                                            className="img-fluid"
+                                            alt="Date Icon"
+                                          />
+                                        </div>
+                                        <div>
+                                          <p>Date</p>
+                                          <span>
+                                            {item?.itinerary
+                                              ?.slice(0, 1)
+                                              .map((itineraryItem, index) => (
+                                                <span key={index}>
+                                                  {itineraryItem.check_in_date
+                                                    ? moment
+                                                        .unix(
+                                                          itineraryItem.check_in_date
+                                                        )
+                                                        .format("DD MMM YYYY")
+                                                    : ""}
+                                                </span>
+                                              ))}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-3 col-4 pright_zeo">
+                                      <div className="ship_ssd">
+                                        <div>
+                                          <img
+                                            src={moon}
+                                            className="img-fluid"
+                                            alt="Duration Icon"
+                                          />
+                                        </div>
+                                        <div>
+                                          <p>Duration</p>
+                                          <span>
+                                            {" "}
+                                            {item?.cruise_nights} Nights
+                                          </span>{" "}
+                                          {/* Dynamic Duration */}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-3 col-4 text-center pright_zeo">
+                                      <img
+                                        src={item?.mobile_cruise_banner_image}
+                                        className="img-fluid ss_logo"
+                                        alt="Logo"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="dieds">
+                                  {item.name
+                                    ? item?.name
+                                        .split(" ")
+                                        .slice(0, 14)
+                                        .join(" ") +
+                                      (item?.name.split(" ").length > 14
+                                        ? "..."
+                                        : "")
+                                    : "N/A"}
+                                </div>
+                                <div className="dieds line_h15">
+                                  <span className="d-flex justify-content-left gap-3 align-items-center">
+                                    <img
+                                      src={iconship}
+                                      className="img-fluid"
+                                      alt="ship icon"
+                                    />{" "}
+                                    <ul className="listttt">
+                                      {item?.itinerary
+                                        ?.slice(0, 10)
+                                        ?.sort((a, b) =>
+                                          a?.port?.localeCompare(b?.port)
+                                        )
+                                        ?.map((port, portIndex) => (
+                                          <li key={portIndex} className="">
+                                           
+                                              {`${port?.port + " | "}` || "N/A"}
+                                            
+                                          </li>
+                                        ))}
+                                    </ul>
+                                  </span>
+                                </div>
+                                <div className="curise_des_area">
+                                  {item?.summary ? (
+                                    item?.summary
+                                      ?.split("•")
+                                      .filter((text) => text.trim() !== "")
+                                      .map((text, index) => {
+                                        const limitedText = text
+                                          .trim()
+                                          .split(" ")
+                                          .slice(0, 30)
+                                          .join(" ");
+                                        return (
+                                          <div
+                                            className="dc"
+                                            key={index}
+                                            dangerouslySetInnerHTML={{
+                                              __html: `${limitedText}${
+                                                text.trim().split(" ").length >
+                                                30
+                                                  ? "..."
+                                                  : ""
+                                              }`,
+                                            }}
+                                          />
+                                        );
+                                      })
+                                  ) : (
+                                    <div>N/A</div>
+                                  )}
+                                </div>
+                                <div className="row align-items-center mt-3">
+                                  <div className="col-lg-6">
+                                    <div className="cck">
+                                      <ul>
+                                        <li>
+                                          <img
+                                            src={date}
+                                            className="img-fluid"
+                                            alt="Date Icon"
+                                          />{" "}
+                                          <span>
+                                            {item?.itinerary
+                                              ?.slice(0, 1)
+                                              .map((itineraryItem, index) => (
+                                                <span key={index}>
+                                                  {itineraryItem.check_in_date
+                                                    ? moment
+                                                        .unix(
+                                                          itineraryItem.check_in_date
+                                                        )
+                                                        .format("DD MMM YYYY")
+                                                    : ""}
+                                                </span>
+                                              ))}
+                                          </span>
+                                        </li>
+                                        <li>
+                                          <img
+                                            src={date}
+                                            className="img-fluid"
+                                            alt="Date Icon"
+                                          />{" "}
+                                          <span>
+                                            {item?.itinerary
+                                              ?.slice(-1)
+                                              .map((itineraryItem, index) => (
+                                                <span key={index}>
+                                                  {itineraryItem.check_in_date
+                                                    ? moment
+                                                        .unix(
+                                                          itineraryItem.check_in_date
+                                                        )
+                                                        .format("DD MMM YYYY")
+                                                    : ""}
+                                                </span>
+                                              ))}
+                                          </span>
+                                        </li>{" "}
+                                        {/* Dynamic */}
+                                      </ul>
+                                    </div>
+                                  </div>
+                                  <div className="col-lg-6">
+                                    <div className="curise_amount">
+                                      {
+                                        <>
+                                          <div className="final_price">
+                                            {[
+                                              "",
+                                              null,
+                                              undefined,
+                                              0,
+                                              "0",
+                                              "0.00",
+                                              "000",
+                                            ].includes(
+                                              item?.price ||
+                                                item?.priceStartFrom
+                                            ) ? (
+                                              <span>CALL US</span>
+                                            ) : (
+                                              <>
+                                                £
+                                                {item?.price ||
+                                                  item?.priceStartFrom}
+                                                pp
+                                              </>
+                                            )}
+                                          </div>
+                                          <div>
+                                            <Link
+                                              to={generateCruiseDetailsUrl(
+                                                "new-cruise-details",
+                                                item
+                                              )}
+                                              className="action_btn"
+                                            >
+                                              View Deal
+                                            </Link>
+                                          </div>
+                                        </>
+                                      }
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                        <div className="col-lg-8 p-0">
-                          <div className="cri_info">
-                            <div className="top_area_ship">
-                              <div className="row">
-                                <div className="col-lg-3 pright_zeo">
-                                  <div className="ship_ssd m20">
-                                    <div>
+                      ))
+                  ) : !data?.length && spinner ? (
+                    <div className="d-flex justify-content-center align-items-center h-25">
+                      <div
+                        className="spinner-border text-secondary"
+                        role="status"
+                      >
+                        <span className="sr-only"></span>
+                      </div>
+                    </div>
+                  ) : data?.length === 0 && !spinner ? (
+                    <div className="d-flex justify-content-center align-items-center ">
+                      No data available
+                    </div>
+                  ) : (
+                    <>
+                      {" "}
+                      <div
+                        className="d-flex justify-content-center align-items-center "
+                        style={{
+                          minHeight: "70dvh",
+                        }}
+                      >
+                        <div
+                          className="spinner-border text-secondary"
+                          role="status"
+                        >
+                          <span className="sr-only"></span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {data?.length && data?.length < totalCount ? (
+                    <div className="load_more_area">
+                      {!spinner ? (
+                        <button
+                          className="btn text-white"
+                          style={{
+                            backgroundColor: "#a8783d",
+                          }}
+                          onClick={() => handleLoadMore()}
+                        >
+                          Load More
+                        </button>
+                      ) : (
+                        <button
+                          style={{
+                            backgroundColor: "#a8783d",
+                          }}
+                          className="btn "
+                          type="button"
+                          disabled
+                        >
+                          <span
+                            className="spinner-border spinner-border-sm"
+                            role="status"
+                            aria-hidden="true"
+                          ></span>
+                          <span className="sr-only">Loading...</span>
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+          <section className="be_inspired">
+            <div className="container">
+              <h4>Be inspired</h4>
+              <div className="row">
+                <div className="col-lg-4">
+                  <div className="beb">
+                    <img src={bg1} className="img-fluid" />
+                  </div>
+                </div>
+                <div className="col-lg-4">
+                  <div className="beb">
+                    <img src={bg2} className="img-fluid" />
+                  </div>
+                </div>
+                <div className="col-lg-4">
+                  <div className="beb">
+                    <img src={bg1} className="img-fluid" />
+                  </div>
+                </div>
+              </div>
+              <a href="#" className="action_btn mt-3">
+                View more
+              </a>
+            </div>
+          </section>
+          {/* <SubscribeWithEmail /> */}
+          <Customersay />
+        </>
+      ) : !data?.length && spinner ? (
+        <div
+          className="d-flex justify-content-center align-items-center "
+          style={{
+            minHeight: "70dvh",
+          }}
+        >
+          <div className="spinner-border text-secondary" role="status">
+            <span className="sr-only"></span>
+          </div>
+        </div>
+      ) : data?.length === 0 && !spinner ? (
+        search_text &&
+        !(
+          selectedCruiseStartDate ||
+          cruiseCategory?.length ||
+          selectedCruiseEndDate ||
+          selectedCruiseLine?.value ||
+          selectedRegions?.value ||
+          selectedShips?.value ||
+          selectedPort?.value ||
+          duration !== null ||
+          price !== null
+        ) ? (
+          <SearchNotFound search_text={search_text} />
+        ) : (
+          <>
+            <section className="banner banner_c">
+              <div
+                id="demo"
+                className="carousel slide carousel-fade"
+                data-bs-ride="carousel"
+              >
+                <div className="carousel-indicators">
+                  <button
+                    type="button"
+                    data-bs-target="#demo"
+                    data-bs-slide-to={0}
+                    className="active"
+                  />
+                </div>
+
+                <div className="carousel-inner">
+                  <div className="carousel-item active">
+                    <img
+                      src={banner}
+                      alt="Collection"
+                      className="d-block"
+                      style={{ width: "100%" }}
+                    />
+                    <div className="bg-overlay22" />
+                    <div className="carousel-caption">
+                      <p>
+                        <img src={bannerlogo} className="img-fluid logo_d" />
+                      </p>
+                      <h3>Hand Picked Cruise Collection</h3>
+                      <p className="bodk">
+                        <span>
+                          Discover an exquisite collection of bespoke cruise
+                          packages
+                        </span>
+                      </p>
+                      <small>
+                        Showcasing all-inclusive indulgence and exclusive
+                        privileges, curated by our product
+                        <br /> team with over 50 years of combined expertise in
+                        luxury cruise travel.
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <Cruisesearch />
+
+            <section className="cruise_dest">
+              <div className="container">
+                <div className="row">
+                  <div className="col-lg-3">
+                    <form className="scroll_form" id="style-1">
+                      <div className="ship_left_area">
+                        <div className="button1">
+                          <h4>
+                            CRUISE CATEGORY{" "}
+                            <i className="ri-arrow-down-s-line" />
+                          </h4>
+                          <div className="mydiv">
+                            <ul>
+                              {filters
+                                .slice(0, visibleCount)
+                                .map((filter, index) => (
+                                  <li key={index}>
+                                    <input
+                                      type="checkbox"
+                                      checked={cruiseCategory.includes(
+                                        filter.value
+                                      )}
+                                      onChange={() => {
+                                        handleCheckboxChange(filter.value);
+                                        setCurrentPage(1);
+                                      }}
+                                    />{" "}
+                                    {filter.label}
+                                  </li>
+                                ))}
+                            </ul>
+
+                            {filters.length > 5 && (
+                              <button
+                                className="action_btn_cat"
+                                onClick={handleSeeMore}
+                              >
+                                {visibleCount === 5 ? "See More" : "See Less"}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <div className="button1">
+                          <h4>
+                            DEPARTURE START DATE{" "}
+                            {/* <i className="ri-arrow-down-s-line" /> */}
+                          </h4>
+                          <div className="mydiv">
+                            {/* <Select
+                                  options={cruiseDate}
+                                  value={selectedCruiseStartDate}
+                                  onChange={setSelectedCruiseStartDate}
+                                  placeholder="Select Date"
+                                  className="select_area"
+                                  classNamePrefix="select_area"
+                                /> */}
+                            <input
+                              type="date"
+                              className="form-control"
+                              value={selectedCruiseStartDate}
+                              onChange={(e) => {
+                                setCurrentPage(1);
+                                setSelectedCruiseStartDate(e.target.value);
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="button1">
+                          <h4>
+                            DEPARTURE END DATE
+                            {/* <i className="ri-arrow-down-s-line" /> */}
+                          </h4>
+                          <div className="mydiv">
+                            <input
+                              type="date"
+                              className="form-control"
+                              value={selectedCruiseEndDate}
+                              min={selectedCruiseStartDate}
+                              disabled={!selectedCruiseStartDate}
+                              onChange={(e) => {
+                                setCurrentPage(1);
+                                setSelectedCruiseEndDate(e.target.value);
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="button1">
+                          <h4>
+                            Destination <i className="ri-arrow-down-s-line" />
+                          </h4>
+                          <div className="mydiv">
+                            <Select
+                              options={regions}
+                              value={selectedRegions}
+                              onChange={(selected) => {
+                                setSelectedRegions(selected);
+                                setCurrentPage(1);
+                              }}
+                              placeholder="Select Destination"
+                              className="select_area "
+                              classNamePrefix="select_area"
+                            />
+                          </div>
+                        </div>
+                        <div className="button1">
+                          <h4>
+                            Cruise Line <i className="ri-arrow-down-s-line" />
+                          </h4>
+                          <div className="mydiv">
+                            <Select
+                              options={cruiseLines}
+                              value={selectedCruiseLine}
+                              onChange={(selected) => {
+                                setSelectedCruiseLine(selected);
+                                setCurrentPage(1);
+                              }}
+                              placeholder="Select Cruise Line"
+                            />
+                          </div>
+                        </div>
+                        <div className="button1">
+                          <h4>
+                            CRUISE SHIP <i className="ri-arrow-down-s-line" />
+                          </h4>
+                          <div className="mydiv">
+                            <Select
+                              options={ships}
+                              value={selectedShips}
+                              onChange={(selected) => {
+                                setSelectedShips(selected);
+                                setCurrentPage(1);
+                              }}
+                              placeholder="Select Ship"
+                            />
+                          </div>
+                        </div>
+                        <div className="button1 border_none">
+                          <h4>
+                            ports <i className="ri-arrow-down-s-line" />
+                          </h4>
+                          <div className="mydiv">
+                            <Select
+                              options={port}
+                              value={selectedPort}
+                              onChange={(selected) => {
+                                setSelectedPort(selected);
+                                setCurrentPage(1);
+                              }}
+                              placeholder="Select Port"
+                            />
+                          </div>
+                        </div>
+                        <div className="filter level-filter level-req">
+                          <div id="rangeSlider" className="range-slider">
+                            <label>Duration:</label>
+                            <div className="number-group">
+                              <input
+                                className="number-input"
+                                type="number"
+                                defaultValue={10}
+                                min={0}
+                                max={50}
+                                value={duration}
+                                onChange={handleDurationChange}
+                              />{" "}
+                              -
+                              <input
+                                className="number-input"
+                                type="number"
+                                defaultValue={50}
+                                min={0}
+                                max={50}
+                                disabled
+                              />{" "}
+                              Nights
+                            </div>
+                            <div className="range-group">
+                              <input
+                                id="range-input"
+                                value={duration}
+                                onChange={handleDurationChange}
+                                className="range-input"
+                                defaultValue={10}
+                                min={1}
+                                max={50}
+                                step={1}
+                                type="range"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="filter level-filter level-req">
+                          <div id="rangeSlider1" className="range-slider">
+                            <label>Price Range:</label>
+                            <div className="number-group">
+                              <input
+                                className="number-input"
+                                type="number"
+                                defaultValue={10}
+                                min={0}
+                                max={50}
+                                value={price}
+                                onChange={handlePriceChange}
+                              />{" "}
+                              -
+                              <input
+                                className="number-input"
+                                type="number"
+                                defaultValue={50}
+                                min={0}
+                                max={50}
+                                disabled
+                              />
+                            </div>
+                            <div className="range-group">
+                              <input
+                                id="range-input"
+                                value={price}
+                                onChange={handlePriceChange}
+                                className="range-input"
+                                defaultValue={10}
+                                min={1}
+                                max={50}
+                                step={1}
+                                type="range"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        {selectedCruiseStartDate ||
+                        cruiseCategory?.length ||
+                        selectedCruiseEndDate ||
+                        selectedCruiseLine?.value ||
+                        selectedRegions?.value ||
+                        selectedShips?.value ||
+                        selectedPort?.value ||
+                        duration ||
+                        price ? (
+                          <div className="text-end">
+                            <a
+                              href="#"
+                              className="action_btn"
+                              onClick={(e) => handleReset(e)}
+                            >
+                              Reset
+                            </a>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                      </div>
+                    </form>
+                  </div>
+                  <div className="col-lg-9">
+                    <div className="cruise_info">
+                      <div className="cruise_result">
+                        Showing: {totalCount && !spinner ? totalCount : "0"}{" "}
+                        Cruises
+                      </div>
+                      <div className="cruise_drop">
+                        {/* <select>
+                    <option>Recommended</option>
+                    <option>Price (Low to High)</option>
+                    <option>Price (High to Low)</option>
+                    <option>Departure Date (Soonest First)</option>
+                    <option>Departure Date (Furthest First)</option>
+                  </select> */}
+                        <Select
+                          value={selectedSortingOption}
+                          onChange={(selected) => {
+                            // setCurrentPage(1);
+                            setSelectedSortingOption(selected);
+                          }}
+                          options={sortingOptions}
+                          placeholder="Recommended"
+                          className="select_rec"
+                        />
+                      </div>
+                    </div>
+                    {data?.length > 0 && !spinner ? (
+                      data
+                        ?.sort((a, b) => {
+                          if (
+                            selectedSortingOption?.value === "high_to_low" ||
+                            selectedSortingOption?.value === "low_to_high"
+                          ) {
+                            return selectedSortingOption?.value ===
+                              "high_to_low"
+                              ? b?.priceStartFrom - a?.priceStartFrom
+                              : a?.priceStartFrom - b?.priceStartFrom;
+                          } else if (
+                            selectedSortingOption?.value ===
+                              "departure_soonest" ||
+                            selectedSortingOption?.value ===
+                              "departure_furthest"
+                          ) {
+                            return selectedSortingOption?.value ===
+                              "departure_soonest"
+                              ? new Date(
+                                  a?.itinerary?.[0]?.check_in_date * 1000
+                                ) -
+                                  new Date(
+                                    b?.itinerary?.[0]?.check_in_date * 1000
+                                  )
+                              : new Date(
+                                  b?.itinerary?.[0]?.check_in_date * 1000
+                                ) -
+                                  new Date(
+                                    a?.itinerary?.[0]?.check_in_date * 1000
+                                  );
+                          }
+
+                          return 0;
+                        })
+                        .map((item, index) => (
+                          <div className="criuse_list" key={index}>
+                            <div className="row" key={index}>
+                              <div className="col-lg-4">
+                                <div className="cri_pic">
+                                  {/* Dynamic Ship Image */}
+                                  <img
+                                    src={item?.cruise_image}
+                                    className="img-fluid"
+                                    alt="Ship"
+                                  />
+
+                                  <div className="wish_list">
+                                    <a>
+                                      <i className="ri-heart-3-line" />
+                                    </a>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="col-lg-8 p-0">
+                                <div className="cri_info">
+                                  <div className="top_area_ship">
+                                    <div className="row">
+                                      <div className="col-lg-3 pright_zeo">
+                                        <div className="ship_ssd m20">
+                                          <div>
+                                            <img
+                                              src={iconship}
+                                              className="img-fluid"
+                                              alt="Ship Icon"
+                                            />
+                                          </div>
+                                          <div>
+                                            <p>Ship</p>
+                                            <span>
+                                              {" "}
+                                              {item?.ship ? item?.ship : "N/A"}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-3 col-4 pright_zeo">
+                                        <div className="ship_ssd">
+                                          <div>
+                                            <img
+                                              src={date}
+                                              className="img-fluid"
+                                              alt="Date Icon"
+                                            />
+                                          </div>
+                                          <div>
+                                            <p>Date</p>
+                                            <span>
+                                              {item?.itinerary
+                                                ?.slice(0, 1)
+                                                .map((itineraryItem, index) => (
+                                                  <span key={index}>
+                                                    {itineraryItem.check_in_date
+                                                      ? moment
+                                                          .unix(
+                                                            itineraryItem.check_in_date
+                                                          )
+                                                          .format("DD MMM YYYY")
+                                                      : ""}
+                                                  </span>
+                                                ))}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-3 col-4 pright_zeo">
+                                        <div className="ship_ssd">
+                                          <div>
+                                            <img
+                                              src={moon}
+                                              className="img-fluid"
+                                              alt="Duration Icon"
+                                            />
+                                          </div>
+                                          <div>
+                                            <p>Duration</p>
+                                            <span>
+                                              {" "}
+                                              {item?.cruise_nights} Nights
+                                            </span>{" "}
+                                            {/* Dynamic Duration */}
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="col-lg-3 col-4 text-center pright_zeo">
+                                        <img
+                                          src={item?.mobile_cruise_banner_image}
+                                          className="img-fluid ss_logo"
+                                          alt="Logo"
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="dieds">
+                                    {item.name
+                                      ? item?.name
+                                          .split(" ")
+                                          .slice(0, 14)
+                                          .join(" ") +
+                                        (item?.name.split(" ").length > 14
+                                          ? "..."
+                                          : "")
+                                      : "N/A"}
+                                  </div>
+                                  <div className="dieds line_h15">
+                                    <span className="d-flex justify-content-left gap-3 align-items-center">
                                       <img
                                         src={iconship}
                                         className="img-fluid"
-                                        alt="Ship Icon"
-                                      />
-                                    </div>
-                                    <div>
-                                      <p>Ship</p>
-                                      <span>
-                                        {" "}
-                                        {item?.ship ? item?.ship : "N/A"}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-3 col-4 pright_zeo">
-                                  <div className="ship_ssd">
-                                    <div>
-                                      <img
-                                        src={date}
-                                        className="img-fluid"
-                                        alt="Date Icon"
-                                      />
-                                    </div>
-                                    <div>
-                                      <p>Date</p>
-                                      <span>
+                                        alt="ship icon"
+                                      />{" "}
+                                      <div className="d-flex flex-wrap gap-2">
                                         {item?.itinerary
-                                          ?.slice(0, 1)
-                                          .map((itineraryItem, index) => (
-                                            <span key={index}>
-                                              {itineraryItem.check_in_date
-                                                ? moment
-                                                    .unix(
-                                                      itineraryItem.check_in_date
-                                                    )
-                                                    .format("DD MMM YYYY")
-                                                : ""}
-                                            </span>
+                                          ?.slice(0, 5)
+                                          ?.sort((a, b) =>
+                                            a?.port?.localeCompare(b?.port)
+                                          )
+                                          ?.map((port, portIndex) => (
+                                            <div key={portIndex} className="">
+                                              <div className="">
+                                                {`${port?.port + " | "}` ||
+                                                  "N/A"}
+                                              </div>
+                                            </div>
                                           ))}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-3 col-4 pright_zeo">
-                                  <div className="ship_ssd">
-                                    <div>
-                                      <img
-                                        src={moon}
-                                        className="img-fluid"
-                                        alt="Duration Icon"
-                                      />
-                                    </div>
-                                    <div>
-                                      <p>Duration</p>
-                                      <span>
-                                        {" "}
-                                        {item?.cruise_nights} Nights
-                                      </span>{" "}
-                                      {/* Dynamic Duration */}
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="col-lg-3 col-4 text-center pright_zeo">
-                                  <img
-                                    src={item?.mobile_cruise_banner_image}
-                                    className="img-fluid ss_logo"
-                                    alt="Logo"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                            <div className="dieds">
-                              {item.name
-                                ? item?.name.split(" ").slice(0, 14).join(" ") +
-                                  (item?.name.split(" ").length > 14
-                                    ? "..."
-                                    : "")
-                                : "N/A"}
-                            </div>
-                            <div className="dieds line_h15">
-                              <span className="d-flex justify-content-left gap-3 align-items-center">
-                                <img
-                                  src={iconship}
-                                  className="img-fluid"
-                                  alt="ship icon"
-                                />{" "}
-                                <div className="d-flex flex-wrap gap-2">
-                                  {item?.itinerary
-                                    ?.slice(0, 5)
-                                    ?.sort((a, b) =>
-                                      a?.port?.localeCompare(b?.port)
-                                    )
-                                    ?.map((port, portIndex) => (
-                                      <div key={portIndex} className="">
-                                        <div className="">
-                                          {`${port?.port + " | "}` || "N/A"}
-                                        </div>
                                       </div>
-                                    ))}
-                                </div>
-                              </span>
-                            </div>
-                            <div className="curise_des_area">
-                              {item?.summary ? (
-                                item?.summary
-                                  ?.split("•")
-                                  .filter((text) => text.trim() !== "")
-                                  .map((text, index) => {
-                                    const limitedText = text
-                                      .trim()
-                                      .split(" ")
-                                      .slice(0, 30)
-                                      .join(" ");
-                                    return (
-                                      <div
-                                        className="dc"
-                                        key={index}
-                                        dangerouslySetInnerHTML={{
-                                          __html: `${limitedText}${
-                                            text.trim().split(" ").length > 30
-                                              ? "..."
-                                              : ""
-                                          }`,
-                                        }}
-                                      />
-                                    );
-                                  })
-                              ) : (
-                                <div>N/A</div>
-                              )}
-                            </div>
-                            <div className="row align-items-center mt-3">
-                              <div className="col-lg-6">
-                                <div className="cck">
-                                  <ul>
-                                    <li>
-                                      <img
-                                        src={date}
-                                        className="img-fluid"
-                                        alt="Date Icon"
-                                      />{" "}
-                                      <span>
-                                        {item?.itinerary
-                                          ?.slice(0, 1)
-                                          .map((itineraryItem, index) => (
-                                            <span key={index}>
-                                              {itineraryItem.check_in_date
-                                                ? moment
-                                                    .unix(
-                                                      itineraryItem.check_in_date
-                                                    )
-                                                    .format("DD MMM YYYY")
-                                                : ""}
+                                    </span>
+                                  </div>
+                                  <div className="curise_des_area">
+                                    {item?.summary ? (
+                                      item?.summary
+                                        ?.split("•")
+                                        .filter((text) => text.trim() !== "")
+                                        .map((text, index) => {
+                                          const limitedText = text
+                                            .trim()
+                                            .split(" ")
+                                            .slice(0, 30)
+                                            .join(" ");
+                                          return (
+                                            <div
+                                              className="dc"
+                                              key={index}
+                                              dangerouslySetInnerHTML={{
+                                                __html: `${limitedText}${
+                                                  text.trim().split(" ")
+                                                    .length > 30
+                                                    ? "..."
+                                                    : ""
+                                                }`,
+                                              }}
+                                            />
+                                          );
+                                        })
+                                    ) : (
+                                      <div>N/A</div>
+                                    )}
+                                  </div>
+                                  <div className="row align-items-center mt-3">
+                                    <div className="col-lg-6">
+                                      <div className="cck">
+                                        <ul>
+                                          <li>
+                                            <img
+                                              src={date}
+                                              className="img-fluid"
+                                              alt="Date Icon"
+                                            />{" "}
+                                            <span>
+                                              {item?.itinerary
+                                                ?.slice(0, 1)
+                                                .map((itineraryItem, index) => (
+                                                  <span key={index}>
+                                                    {itineraryItem.check_in_date
+                                                      ? moment
+                                                          .unix(
+                                                            itineraryItem.check_in_date
+                                                          )
+                                                          .format("DD MMM YYYY")
+                                                      : ""}
+                                                  </span>
+                                                ))}
                                             </span>
-                                          ))}
-                                      </span>
-                                    </li>
-                                    <li>
-                                      <img
-                                        src={date}
-                                        className="img-fluid"
-                                        alt="Date Icon"
-                                      />{" "}
-                                      <span>
-                                        {item?.itinerary
-                                          ?.slice(-1)
-                                          .map((itineraryItem, index) => (
-                                            <span key={index}>
-                                              {itineraryItem.check_in_date
-                                                ? moment
-                                                    .unix(
-                                                      itineraryItem.check_in_date
-                                                    )
-                                                    .format("DD MMM YYYY")
-                                                : ""}
+                                          </li>
+                                          <li>
+                                            <img
+                                              src={date}
+                                              className="img-fluid"
+                                              alt="Date Icon"
+                                            />{" "}
+                                            <span>
+                                              {item?.itinerary
+                                                ?.slice(-1)
+                                                .map((itineraryItem, index) => (
+                                                  <span key={index}>
+                                                    {itineraryItem.check_in_date
+                                                      ? moment
+                                                          .unix(
+                                                            itineraryItem.check_in_date
+                                                          )
+                                                          .format("DD MMM YYYY")
+                                                      : ""}
+                                                  </span>
+                                                ))}
                                             </span>
-                                          ))}
-                                      </span>
-                                    </li>{" "}
-                                    {/* Dynamic */}
-                                  </ul>
-                                </div>
-                              </div>
-                              <div className="col-lg-6">
-                                <div className="curise_amount">
-                                  {
-                                    <>
-                                      <div className="final_price">
-                                        {[
-                                          "",
-                                          null,
-                                          undefined,
-                                          0,
-                                          "0",
-                                          "0.00",
-                                          "000",
-                                        ].includes(
-                                          item?.price || item?.priceStartFrom
-                                        ) ? (
-                                          <span>CALL US</span>
-                                        ) : (
+                                          </li>{" "}
+                                          {/* Dynamic */}
+                                        </ul>
+                                      </div>
+                                    </div>
+                                    <div className="col-lg-6">
+                                      <div className="curise_amount">
+                                        {
                                           <>
-                                            £
-                                            {item?.price ||
-                                              item?.priceStartFrom}
-                                            pp
+                                            <div className="final_price">
+                                              {[
+                                                "",
+                                                null,
+                                                undefined,
+                                                0,
+                                                "0",
+                                                "0.00",
+                                                "000",
+                                              ].includes(
+                                                item?.price ||
+                                                  item?.priceStartFrom
+                                              ) ? (
+                                                <span>CALL US</span>
+                                              ) : (
+                                                <>
+                                                  £
+                                                  {item?.price ||
+                                                    item?.priceStartFrom}
+                                                  pp
+                                                </>
+                                              )}
+                                            </div>
+                                            <div>
+                                              <Link
+                                                to={generateCruiseDetailsUrl(
+                                                  "new-cruise-details",
+                                                  item
+                                                )}
+                                                className="action_btn"
+                                              >
+                                                View Deal
+                                              </Link>
+                                            </div>
                                           </>
-                                        )}
+                                        }
                                       </div>
-                                      <div>
-                                        <Link
-                                          to={generateCruiseDetailsUrl(
-                                            "new-cruise-details",
-                                            item
-                                          )}
-                                          className="action_btn"
-                                        >
-                                          View Deal
-                                        </Link>
-                                      </div>
-                                    </>
-                                  }
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
+                        ))
+                    ) : !data?.length && spinner ? (
+                      <div className="d-flex justify-content-center align-items-center h-25">
+                        <div
+                          className="spinner-border text-secondary"
+                          role="status"
+                        >
+                          <span className="sr-only"></span>
                         </div>
                       </div>
-                    </div>
-                  ))
-              ) : !data?.length && spinner ? (
-                <div className="d-flex justify-content-center align-items-center h-25">
-                  <div className="spinner-border text-secondary" role="status">
-                    <span className="sr-only"></span>
-                  </div>
-                </div>
-              ) : data?.length === 0 && !spinner ? (
-                <div className="d-flex justify-content-center align-items-center ">
-                  No data available
-                </div>
-              ) : (
-                <>
-                  {" "}
-                  <div
-                    className="d-flex justify-content-center align-items-center "
-                    style={{
-                      minHeight: "70dvh",
-                    }}
-                  >
-                    <div
-                      className="spinner-border text-secondary"
-                      role="status"
-                    >
-                      <span className="sr-only"></span>
-                    </div>
-                  </div>
-                </>
-              )}
+                    ) : data?.length === 0 && !spinner ? (
+                      <div className="d-flex justify-content-center align-items-center ">
+                        No data available
+                      </div>
+                    ) : (
+                      <>
+                        {" "}
+                        <div
+                          className="d-flex justify-content-center align-items-center "
+                          style={{
+                            minHeight: "70dvh",
+                          }}
+                        >
+                          <div
+                            className="spinner-border text-secondary"
+                            role="status"
+                          >
+                            <span className="sr-only"></span>
+                          </div>
+                        </div>
+                      </>
+                    )}
 
-              {data?.length && data?.length < totalCount ? (
-                <div className="load_more_area">
-                  {!spinner ? (
-                    <button
-                      className="btn text-white"
-                      style={{
-                        backgroundColor: "#a8783d",
-                      }}
-                      onClick={() => handleLoadMore()}
-                    >
-                      Load More
-                    </button>
-                  ) : (
-                    <button
-                      style={{
-                        backgroundColor: "#a8783d",
-                      }}
-                      className="btn "
-                      type="button"
-                      disabled
-                    >
-                      <span
-                        className="spinner-border spinner-border-sm"
-                        role="status"
-                        aria-hidden="true"
-                      ></span>
-                      <span className="sr-only">Loading...</span>
-                    </button>
-                  )}
+                    {data?.length && data?.length < totalCount ? (
+                      <div className="load_more_area">
+                        {!spinner ? (
+                          <button
+                            className="btn text-white"
+                            style={{
+                              backgroundColor: "#a8783d",
+                            }}
+                            onClick={() => handleLoadMore()}
+                          >
+                            Load More
+                          </button>
+                        ) : (
+                          <button
+                            style={{
+                              backgroundColor: "#a8783d",
+                            }}
+                            className="btn "
+                            type="button"
+                            disabled
+                          >
+                            <span
+                              className="spinner-border spinner-border-sm"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
+                            <span className="sr-only">Loading...</span>
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <></>
+                    )}
+                  </div>
                 </div>
-              ) : (
-                <></>
-              )}
+              </div>
+            </section>
+            <section className="be_inspired">
+              <div className="container">
+                <h4>Be inspired</h4>
+                <div className="row">
+                  <div className="col-lg-4">
+                    <div className="beb">
+                      <img src={bg1} className="img-fluid" />
+                    </div>
+                  </div>
+                  <div className="col-lg-4">
+                    <div className="beb">
+                      <img src={bg2} className="img-fluid" />
+                    </div>
+                  </div>
+                  <div className="col-lg-4">
+                    <div className="beb">
+                      <img src={bg1} className="img-fluid" />
+                    </div>
+                  </div>
+                </div>
+                <a href="#" className="action_btn mt-3">
+                  View more
+                </a>
+              </div>
+            </section>
+            {/* <SubscribeWithEmail /> */}
+            <Customersay />
+          </>
+        )
+      ) : (
+        <>
+          {" "}
+          <div
+            className="d-flex justify-content-center align-items-center "
+            style={{
+              minHeight: "70dvh",
+            }}
+          >
+            <div className="spinner-border text-secondary" role="status">
+              <span className="sr-only"></span>
             </div>
           </div>
-        </div>
-      </section>
-      <section className="be_inspired">
-        <div className="container">
-          <h4>Be inspired</h4>
-          <div className="row">
-            <div className="col-lg-4">
-              <div className="beb">
-                <img src={bg1} className="img-fluid" />
-              </div>
-            </div>
-            <div className="col-lg-4">
-              <div className="beb">
-                <img src={bg2} className="img-fluid" />
-              </div>
-            </div>
-            <div className="col-lg-4">
-              <div className="beb">
-                <img src={bg1} className="img-fluid" />
-              </div>
-            </div>
-          </div>
-          <a href="#" className="action_btn mt-3">
-            View more
-          </a>
-        </div>
-      </section>
-      {/* <SubscribeWithEmail /> */}
-      <Customersay />
+        </>
+      )}
     </>
   );
 };
